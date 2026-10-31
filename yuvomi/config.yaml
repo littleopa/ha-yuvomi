@@ -1,0 +1,39 @@
+name: Yuvomi
+version: "2.83.0"
+slug: yuvomi
+description: Self-hosted family planner – tasks, calendar, shopping, meals, budget and more
+url: https://github.com/Phillipxh/ha-yuvomi/tree/main/yuvomi
+arch:
+  - amd64
+  - aarch64
+startup: application
+boot: auto
+init: false
+webui: "http://[HOST]:[PORT:3000]"
+watchdog: "tcp://[HOST]:[PORT:3000]"
+ports:
+  3000/tcp: 3000
+ports_description:
+  3000/tcp: Yuvomi web interface
+backup: cold
+options:
+  base_url: ""
+  behind_https_proxy: false
+  weather_city: ""
+  weather_lat: ""
+  weather_lon: ""
+  sync_interval_minutes: 15
+  backup_keep: 7
+  log_level: info
+  env_vars: []
+schema:
+  base_url: str?
+  behind_https_proxy: bool
+  weather_city: str?
+  weather_lat: str?
+  weather_lon: str?
+  sync_interval_minutes: int(1,1440)
+  backup_keep: int(1,100)
+  log_level: list(debug|info|warn|error)
+  env_vars:
+    - match(^[A-Z][A-Z0-9_]*=.*$)

@@ -1,0 +1,38 @@
+configuration:
+  base_url:
+    name: Öffentliche URL
+    description: >-
+      Die Adresse, unter der du Yuvomi öffnest, z. B. https://family.example.de.
+      Wird für Kalender-Feeds, Einladungslinks und OAuth-Rückleitungen gebraucht.
+  behind_https_proxy:
+    name: Hinter HTTPS-Reverse-Proxy
+    description: >-
+      Aktivieren, wenn Yuvomi über einen HTTPS-Reverse-Proxy erreichbar ist
+      (Nginx Proxy Manager, Caddy, Traefik, Cloudflare Tunnel). Setzt sichere
+      Cookies und vertraut den Weiterleitungs-Headern des Proxys. Aus lassen,
+      wenn du Yuvomi direkt über http://<home-assistant>:3000 öffnest.
+  weather_city:
+    name: Wetter – Stadt
+    description: Stadt für das Wetter-Widget.
+  weather_lat:
+    name: Wetter – Breitengrad
+    description: Optional, genauer als der Stadtname.
+  weather_lon:
+    name: Wetter – Längengrad
+    description: Optional, genauer als der Stadtname.
+  sync_interval_minutes:
+    name: Kalender-Sync-Intervall (Minuten)
+    description: Wie oft externe Kalender (CalDAV, Google, Outlook) abgeglichen werden.
+  backup_keep:
+    name: Aufzubewahrende Sicherungen
+    description: Anzahl der nächtlichen Yuvomi-Sicherungen in /data/backups.
+  log_level:
+    name: Log-Level
+    description: Detailgrad des App-Protokolls.
+  env_vars:
+    name: Weitere Umgebungsvariablen
+    description: >-
+      Jede andere Yuvomi-Einstellung als SCHLÜSSEL=WERT, z. B. OIDC_ISSUER=…,
+      WEBDAV_BACKUP_ENABLED=true oder IMMICH_URL=…. Siehe .env.example von Yuvomi.
+network:
+  3000/tcp: Yuvomi-Weboberfläche
