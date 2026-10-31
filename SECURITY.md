@@ -1,7 +1,7 @@
 # Security
 
 Please report security problems privately via
-[GitHub security advisories](https://github.com/Phillipxh/ha-yuvomi/security/advisories/new),
+[GitHub security advisories](https://github.com/phjay-lab/ha-yuvomi/security/advisories/new),
 not in public issues.
 
 This repository covers the Home Assistant packaging (options, startup scripts,

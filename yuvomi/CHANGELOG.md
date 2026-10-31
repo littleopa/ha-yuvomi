@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.83.0-6
+
+- Repository moved to phjay-lab/ha-yuvomi (old links redirect).
+
 ## 2.83.0-5
 
 - New option `link_accounts`: link existing Yuvomi accounts to Home Assistant

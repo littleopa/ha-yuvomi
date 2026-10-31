@@ -24,5 +24,5 @@ CMD ["node", "server/index.js"]
 LABEL \
   io.hass.type="addon" \
   io.hass.arch="amd64|aarch64" \
-  org.opencontainers.image.source="https://github.com/Phillipxh/ha-yuvomi" \
+  org.opencontainers.image.source="https://github.com/phjay-lab/ha-yuvomi" \
   org.opencontainers.image.licenses="MIT"
