@@ -62,11 +62,40 @@ while the backup is written, so the database is always consistent.
    in the same folder.
 5. Start the app and check the log for `Connected: /data/yuvomi.db`.
 
-## Sidebar
+## Showing Yuvomi in the sidebar
 
 Yuvomi does not support being served below a sub-path yet, so it cannot use
-Home Assistant ingress. It opens on its own port instead. To show it in a
-dashboard, use a **Webpage** card pointing at your HTTPS `base_url`.
+Home Assistant ingress. It runs on its own port and is added to the sidebar
+as a **Webpage** dashboard instead:
+
+1. Make Yuvomi reachable via HTTPS, e.g. a reverse proxy host
+   `https://family.example.com` → `http://<home-assistant-ip>:3000`
+   (websockets on). Set `base_url` to that address and enable
+   `behind_https_proxy`.
+2. Allow Home Assistant to frame Yuvomi. Yuvomi sends
+   `X-Frame-Options: SAMEORIGIN` and a CSP with `frame-ancestors 'self'`; in
+   the proxy replace them, for Nginx Proxy Manager in **Advanced**:
+
+   ```nginx
+   proxy_hide_header X-Frame-Options;
+   proxy_hide_header Content-Security-Policy;
+   add_header Content-Security-Policy "<Yuvomi's policy> frame-ancestors 'self' https://<your-home-assistant>" always;
+   ```
+
+   Copy Yuvomi's own policy from `curl -sI http://<home-assistant-ip>:3000/`
+   and only change its `frame-ancestors` part, so the rest of the protection
+   stays in place.
+
+   Login works as long as Yuvomi and Home Assistant share the same
+   registrable domain (e.g. `family.example.com` and `ha.example.com`),
+   because Yuvomi's session cookie is `SameSite=Lax`.
+3. In Home Assistant open **Settings → Dashboards → Add dashboard → Webpage**,
+   enter the HTTPS address, title *Yuvomi*, icon `mdi:home-heart`, and keep
+   **Show in sidebar** enabled.
+
+Plain `http://<home-assistant>:3000` only works in the sidebar when you also
+open Home Assistant itself via plain HTTP; browsers block HTTP pages inside
+an HTTPS Home Assistant.
 
 ## Support
 
