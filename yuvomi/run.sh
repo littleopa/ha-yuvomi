@@ -7,6 +7,10 @@ node /options.mjs > "$ENV_FILE"
 . "$ENV_FILE"
 rm -f "$ENV_FILE"
 
+# Link Yuvomi accounts to Home Assistant users (option link_accounts).
+chown -R node:node /data
+gosu node node /link-accounts.mjs || echo "[ha-yuvomi] link_accounts failed, starting anyway"
+
 # Sidebar (ingress) page, runs unprivileged next to Yuvomi.
 gosu node node /ingress.mjs &
 

@@ -1,5 +1,5 @@
 name: Yuvomi
-version: "2.83.0-4"
+version: "2.83.0-5"
 slug: yuvomi
 description: Self-hosted family planner – tasks, calendar, shopping, meals, budget and more
 url: https://github.com/Phillipxh/ha-yuvomi/tree/main/yuvomi
@@ -23,6 +23,7 @@ options:
   homeassistant_url: ""
   allow_signup: false
   password_login: true
+  link_accounts: []
   weather_city: ""
   weather_lat: ""
   weather_lon: ""
@@ -38,6 +39,8 @@ schema:
   homeassistant_url: str?
   allow_signup: bool
   password_login: bool
+  link_accounts:
+    - match(^[^=]+=[0-9a-f]{32}$)
   weather_city: str?
   weather_lat: str?
   weather_lon: str?

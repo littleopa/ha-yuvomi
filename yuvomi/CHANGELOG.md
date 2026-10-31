@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.83.0-5
+
+- New option `link_accounts`: link existing Yuvomi accounts to Home Assistant
+  users without signing in with a Yuvomi password first.
+
 ## 2.83.0-4
 
 - Config cleanup (linter): default ingress port, no separate web UI link next to the panel.

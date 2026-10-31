@@ -72,9 +72,10 @@ app ships this as a small patch until Yuvomi includes it upstream.
    `base_url` must be set (Yuvomi identifies itself to Home Assistant with it).
    Restart the app.
 2. The login page now shows **Sign in with Home Assistant**.
-3. Existing Yuvomi accounts: sign in with the password once, open
-   **Settings → Account** and link the account to Home Assistant. Do this for
-   every member.
+3. Existing Yuvomi accounts: either add them to `link_accounts` as
+   `yuvomi_username=home_assistant_user_id` (the ID is shown under
+   **Settings → People → Users** with advanced mode on) and restart the app,
+   or sign in with the password once and link under **Settings → Account**.
 4. Optional: enable `allow_signup` to create Yuvomi accounts automatically
    for Home Assistant users that are not linked yet (they start as members),
    and disable `password_login` to make Home Assistant the only way in.

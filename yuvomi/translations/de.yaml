@@ -31,6 +31,10 @@ configuration:
     name: Anmeldung mit Passwort erlauben
     description: >-
       Ausschalten, um nur noch die Anmeldung über Home Assistant zuzulassen (greift, sobald ein Admin-Konto verknüpft ist).
+  link_accounts:
+    name: Konten verknüpfen
+    description: >-
+      Verknüpft bestehende Yuvomi-Konten ohne Passwort mit Home-Assistant-Benutzern, ein Eintrag pro Konto: yuvomi_benutzername=home_assistant_benutzer_id (Einstellungen > Personen > Benutzer > ID, im erweiterten Modus von Home Assistant). Bestehende Verknüpfungen werden nie geändert.
   weather_city:
     name: Wetter – Stadt
     description: Stadt für das Wetter-Widget.

@@ -31,6 +31,10 @@ configuration:
     name: Allow password login
     description: >-
       Turn off to only allow Home Assistant sign-in (takes effect once an administrator account is linked).
+  link_accounts:
+    name: Link accounts
+    description: >-
+      Links existing Yuvomi accounts to Home Assistant users without a password, one entry per account: yuvomi_username=home_assistant_user_id (Settings > People > Users > ID, advanced mode of Home Assistant). Existing links are never changed.
   weather_city:
     name: Weather city
     description: City shown in the weather widget.
