@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Question or idea
+    url: https://github.com/Phillipxh/ha-yuvomi/discussions
+    about: Ask questions and share ideas in Discussions.
+  - name: Problem in Yuvomi itself
+    url: https://github.com/ulsklyc/yuvomi/issues
+    about: Bugs in Yuvomi's pages and features belong to the Yuvomi project.
