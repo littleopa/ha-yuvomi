@@ -1,16 +1,13 @@
 name: Yuvomi
-version: "2.83.0"
+version: "2.83.0-1"
 slug: yuvomi
 description: Self-hosted family planner – tasks, calendar, shopping, meals, budget and more
 url: https://github.com/Phillipxh/ha-yuvomi/tree/main/yuvomi
 arch:
   - amd64
   - aarch64
-startup: application
-boot: auto
 init: false
 webui: "http://[HOST]:[PORT:3000]"
-watchdog: "tcp://[HOST]:[PORT:3000]"
 ports:
   3000/tcp: 3000
 ports_description:

@@ -24,6 +24,6 @@ jobs:
         run: |
           mkdir -p /tmp/data
           echo '{"log_level":"info","sync_interval_minutes":15,"backup_keep":7,"behind_https_proxy":false,"env_vars":[]}' > /tmp/data/options.json
-          docker run -d --name y -p 3000:3000 -v /tmp/data:/data ha-yuvomi:ci
+          docker run -d --name yuvomi-ci -p 3000:3000 -v /tmp/data:/data ha-yuvomi:ci
           for i in $(seq 1 30); do curl -fs http://127.0.0.1:3000/ >/dev/null && exit 0; sleep 2; done
-          docker logs y; exit 1
+          docker logs yuvomi-ci; exit 1
