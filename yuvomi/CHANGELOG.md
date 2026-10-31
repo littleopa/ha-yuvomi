@@ -1,5 +1,9 @@
 # Changelog
 
+## 2.83.0-4
+
+- Config cleanup (linter): default ingress port, no separate web UI link next to the panel.
+
 ## 2.83.0-3
 
 - Sign in with Home Assistant (options `homeassistant_login`, `homeassistant_url`,

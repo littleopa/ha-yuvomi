@@ -1,5 +1,5 @@
 name: Yuvomi
-version: "2.83.0-3"
+version: "2.83.0-4"
 slug: yuvomi
 description: Self-hosted family planner – tasks, calendar, shopping, meals, budget and more
 url: https://github.com/Phillipxh/ha-yuvomi/tree/main/yuvomi
@@ -8,10 +8,8 @@ arch:
   - aarch64
 init: false
 ingress: true
-ingress_port: 8099
 panel_icon: mdi:home-heart
 panel_title: Yuvomi
-webui: "http://[HOST]:[PORT:3000]"
 ports:
   3000/tcp: 3000
 ports_description:
