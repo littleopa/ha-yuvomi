@@ -62,6 +62,30 @@ while the backup is written, so the database is always consistent.
    in the same folder.
 5. Start the app and check the log for `Connected: /data/yuvomi.db`.
 
+## Sign in with Home Assistant
+
+Yuvomi can use your Home Assistant users instead of separate passwords. The
+app ships this as a small patch until Yuvomi includes it upstream.
+
+1. Set `homeassistant_url` to the address your browser uses for Home
+   Assistant (e.g. `https://ha.example.com`) and enable `homeassistant_login`.
+   `base_url` must be set (Yuvomi identifies itself to Home Assistant with it).
+   Restart the app.
+2. The login page now shows **Sign in with Home Assistant**.
+3. Existing Yuvomi accounts: sign in with the password once, open
+   **Settings → Account** and link the account to Home Assistant. Do this for
+   every member.
+4. Optional: enable `allow_signup` to create Yuvomi accounts automatically
+   for Home Assistant users that are not linked yet (they start as members),
+   and disable `password_login` to make Home Assistant the only way in.
+
+Yuvomi only asks Home Assistant who signed in and revokes the token
+immediately; it gets no further access to Home Assistant.
+
+Inside the sidebar the Home Assistant login opens in a separate window
+(Home Assistant does not allow its login page inside foreign frames); the
+sidebar reloads by itself once the sign-in succeeded.
+
 ## Showing Yuvomi in the sidebar
 
 The app has a Home Assistant panel: enable **Show in sidebar** on the app

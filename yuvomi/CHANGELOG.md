@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.83.0-3
+
+- Sign in with Home Assistant (options `homeassistant_login`, `homeassistant_url`,
+  `allow_signup`, `password_login`), shipped as a patch until Yuvomi includes it.
+- SSO from the sidebar opens in a separate window and the panel reloads by itself.
+
 ## 2.83.0-2
 
 - Sidebar support: the app now has a Home Assistant panel ("Show in sidebar")

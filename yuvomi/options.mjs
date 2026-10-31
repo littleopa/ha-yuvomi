@@ -52,6 +52,16 @@ if (opts.behind_https_proxy) {
   env.SESSION_SECURE = 'true';
   env.TRUST_PROXY = '1';
 }
+// Anmeldung mit Home Assistant (patches/homeassistant-sso.patch). Die
+// Server-Anfragen gehen ueber das interne Supervisor-Netz an Home Assistant.
+if (opts.homeassistant_login && opts.homeassistant_url) {
+  env.HOMEASSISTANT_URL = opts.homeassistant_url.replace(/\/+$/, '');
+  env.HOMEASSISTANT_INTERNAL_URL = 'http://homeassistant:8123';
+  env.OIDC_ALLOW_SIGNUP = opts.allow_signup ? 'true' : 'false';
+  if (opts.password_login === false) env.AUTH_ALLOW_PASSWORD_LOGIN = 'false';
+} else if (opts.homeassistant_login) {
+  console.error('[ha-yuvomi] homeassistant_login is on, but homeassistant_url is empty - Home Assistant sign-in stays off.');
+}
 if (opts.weather_city) env.WEATHER_CITY = opts.weather_city;
 if (opts.weather_lat) env.WEATHER_LAT = String(opts.weather_lat);
 if (opts.weather_lon) env.WEATHER_LON = String(opts.weather_lon);

@@ -1,0 +1,908 @@
+From 444a618460840ddd9ec64338180793e341ab0a15 Mon Sep 17 00:00:00 2001
+From: Phillipxh <150742483+Phillipxh@users.noreply.github.com>
+Date: Sat, 31 Oct 2026 14:22:19 +0100
+Subject: [PATCH] feat(auth): sign in with Home Assistant
+
+Home Assistant speaks OAuth 2.0 but not OpenID Connect (no discovery, no
+ID token, no userinfo), so it cannot be used as OIDC_ISSUER. With
+HOMEASSISTANT_URL set, the existing SSO flow uses Home Assistant as its
+source instead: authorize with PKCE, code exchange, the user is read via
+the WebSocket API (auth/current_user) and the refresh token is revoked
+right away. Linking, OIDC_ALLOW_SIGNUP, SSO-only accounts,
+AUTH_ALLOW_PASSWORD_LOGIN and the second factor apply unchanged. A
+configured OIDC provider takes precedence.
+
+Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_019TNUHVPEM9ZvMaCtSc7RP5
+Signed-off-by: Phillipxh <150742483+Phillipxh@users.noreply.github.com>
+---
+ public/locales/ar.json                |   1 +
+ public/locales/cs.json                |   1 +
+ public/locales/de.json                |   1 +
+ public/locales/el.json                |   1 +
+ public/locales/en.json                |   1 +
+ public/locales/es.json                |   1 +
+ public/locales/fa.json                |   1 +
+ public/locales/fil.json               |   1 +
+ public/locales/fr.json                |   1 +
+ public/locales/hi.json                |   1 +
+ public/locales/hu.json                |   1 +
+ public/locales/id.json                |   1 +
+ public/locales/it.json                |   1 +
+ public/locales/ja.json                |   1 +
+ public/locales/ko.json                |   1 +
+ public/locales/nb.json                |   1 +
+ public/locales/nl.json                |   1 +
+ public/locales/pl.json                |   1 +
+ public/locales/pt-BR.json             |   1 +
+ public/locales/pt.json                |   1 +
+ public/locales/ru.json                |   1 +
+ public/locales/sv.json                |   1 +
+ public/locales/tr.json                |   1 +
+ public/locales/uk.json                |   1 +
+ public/locales/vi.json                |   1 +
+ public/locales/zh-Hant.json           |   1 +
+ public/locales/zh.json                |   1 +
+ public/pages/login.js                 |  49 +++++-
+ server/auth.js                        |  88 +++++++--
+ server/services/homeassistant-auth.js | 245 ++++++++++++++++++++++++++
+ server/services/oidc.js               |  28 ++-
+ 31 files changed, 418 insertions(+), 19 deletions(-)
+ create mode 100644 server/services/homeassistant-auth.js
+
+diff --git a/public/locales/ar.json b/public/locales/ar.json
+index 6dcfcff..33127ca 100644
+--- a/public/locales/ar.json
++++ b/public/locales/ar.json
+@@ -3804,6 +3804,7 @@
+         "hidePassword": "إخفاء كلمة المرور",
+         "version": "v{{version}}",
+         "loginWithSso": "تسجيل الدخول بـ SSO",
++        "loginWithHomeAssistant": "تسجيل الدخول باستخدام Home Assistant",
+         "orDivider": "أو",
+         "ssoError": "فشل تسجيل الدخول بـ SSO. يرجى المحاولة مرة أخرى.",
+         "ssoNoAccount": "لا يوجد حساب هنا بعد لتسجيل الدخول بـ SSO هذا. يرجى التواصل مع مسؤول منزلك.",
+diff --git a/public/locales/cs.json b/public/locales/cs.json
+index ba813ab..348c407 100644
+--- a/public/locales/cs.json
++++ b/public/locales/cs.json
+@@ -3582,6 +3582,7 @@
+         "hidePassword": "Skrýt heslo",
+         "version": "v{{version}}",
+         "loginWithSso": "Přihlásit se přes SSO",
++        "loginWithHomeAssistant": "Přihlásit se přes Home Assistant",
+         "orDivider": "nebo",
+         "ssoError": "Přihlášení přes SSO selhalo. Zkuste to prosím znovu.",
+         "ssoNoAccount": "Pro toto přihlášení přes SSO zde zatím není žádný účet. Obraťte se na správce vaší domácnosti.",
+diff --git a/public/locales/de.json b/public/locales/de.json
+index 74ca81d..037bd18 100644
+--- a/public/locales/de.json
++++ b/public/locales/de.json
+@@ -3482,6 +3482,7 @@
+         "hidePassword": "Passwort verbergen",
+         "version": "v{{version}}",
+         "loginWithSso": "Mit SSO anmelden",
++        "loginWithHomeAssistant": "Mit Home Assistant anmelden",
+         "orDivider": "oder",
+         "ssoError": "SSO-Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
+         "ssoNoAccount": "Für diese SSO-Anmeldung gibt es hier noch kein Konto. Wende dich an die Administration deines Haushalts.",
+diff --git a/public/locales/el.json b/public/locales/el.json
+index fd1513f..d07b5f1 100644
+--- a/public/locales/el.json
++++ b/public/locales/el.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Απόκρυψη κωδικού",
+         "version": "v{{version}}",
+         "loginWithSso": "Σύνδεση με SSO",
++        "loginWithHomeAssistant": "Σύνδεση με Home Assistant",
+         "orDivider": "ή",
+         "ssoError": "Η σύνδεση SSO απέτυχε. Παρακαλώ δοκιμάστε ξανά.",
+         "ssoNoAccount": "Δεν υπάρχει ακόμη λογαριασμός εδώ για αυτή τη σύνδεση SSO. Απευθυνθείτε στον διαχειριστή του νοικοκυριού σας.",
+diff --git a/public/locales/en.json b/public/locales/en.json
+index 957888a..b27c2ca 100644
+--- a/public/locales/en.json
++++ b/public/locales/en.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Hide password",
+         "version": "v{{version}}",
+         "loginWithSso": "Sign in with SSO",
++        "loginWithHomeAssistant": "Sign in with Home Assistant",
+         "orDivider": "or",
+         "ssoError": "SSO sign-in failed. Please try again.",
+         "ssoNoAccount": "There is no account here yet for this SSO sign-in. Please contact your household's administrator.",
+diff --git a/public/locales/es.json b/public/locales/es.json
+index 58f75a3..ab186cb 100644
+--- a/public/locales/es.json
++++ b/public/locales/es.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Ocultar contraseña",
+         "version": "v{{version}}",
+         "loginWithSso": "Iniciar sesión con SSO",
++        "loginWithHomeAssistant": "Iniciar sesión con Home Assistant",
+         "orDivider": "o",
+         "ssoError": "Error al iniciar sesión con SSO. Inténtalo de nuevo.",
+         "ssoNoAccount": "Todavía no hay ninguna cuenta aquí para este inicio de sesión con SSO. Ponte en contacto con la administración de tu hogar.",
+diff --git a/public/locales/fa.json b/public/locales/fa.json
+index 522130c..2e17c5c 100644
+--- a/public/locales/fa.json
++++ b/public/locales/fa.json
+@@ -3482,6 +3482,7 @@
+         "hidePassword": "پنهان‌سازی رمز عبور",
+         "version": "v{{version}}",
+         "loginWithSso": "ورود با SSO",
++        "loginWithHomeAssistant": "ورود با Home Assistant",
+         "orDivider": "یا",
+         "ssoError": "ورود با SSO ناموفق بود. لطفاً دوباره تلاش کنید.",
+         "ssoNoAccount": "هنوز برای این ورود با SSO حسابی در اینجا وجود ندارد. لطفاً با مدیر خانوار خود تماس بگیرید.",
+diff --git a/public/locales/fil.json b/public/locales/fil.json
+index 2f1a12e..b86d93e 100644
+--- a/public/locales/fil.json
++++ b/public/locales/fil.json
+@@ -3482,6 +3482,7 @@
+         "hidePassword": "Itago ang password",
+         "version": "v{{version}}",
+         "loginWithSso": "Mag-sign in gamit ang SSO",
++        "loginWithHomeAssistant": "Mag-sign in gamit ang Home Assistant",
+         "orDivider": "o",
+         "ssoError": "Nabigo ang pag-sign in gamit ang SSO. Pakisubukang muli.",
+         "ssoNoAccount": "Wala pang account dito para sa pag-sign in na ito gamit ang SSO. Makipag-ugnayan sa administrador ng iyong sambahayan.",
+diff --git a/public/locales/fr.json b/public/locales/fr.json
+index 2ca663e..8759273 100644
+--- a/public/locales/fr.json
++++ b/public/locales/fr.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Masquer le mot de passe",
+         "version": "v{{version}}",
+         "loginWithSso": "Se connecter avec SSO",
++        "loginWithHomeAssistant": "Se connecter avec Home Assistant",
+         "orDivider": "ou",
+         "ssoError": "La connexion SSO a échoué. Veuillez réessayer.",
+         "ssoNoAccount": "Aucun compte n'existe encore ici pour cette connexion SSO. Contactez l'administrateur de votre foyer.",
+diff --git a/public/locales/hi.json b/public/locales/hi.json
+index 8c0b939..573c901 100644
+--- a/public/locales/hi.json
++++ b/public/locales/hi.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "पासवर्ड छिपाएं",
+         "version": "v{{version}}",
+         "loginWithSso": "SSO से साइन इन करें",
++        "loginWithHomeAssistant": "Home Assistant से साइन इन करें",
+         "orDivider": "या",
+         "ssoError": "SSO साइन-इन विफल रहा। कृपया पुनः प्रयास करें।",
+         "ssoNoAccount": "इस SSO साइन-इन के लिए यहाँ अभी कोई खाता नहीं है। कृपया अपने घर के प्रशासक से संपर्क करें।",
+diff --git a/public/locales/hu.json b/public/locales/hu.json
+index 3b5c1ac..cba281e 100644
+--- a/public/locales/hu.json
++++ b/public/locales/hu.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Jelszó elrejtése",
+         "version": "v{{version}}",
+         "loginWithSso": "Bejelentkezés SSO-val",
++        "loginWithHomeAssistant": "Bejelentkezés a Home Assistanttal",
+         "orDivider": "vagy",
+         "ssoError": "SSO bejelentkezés sikertelen. Kérjük, próbálja újra.",
+         "ssoNoAccount": "Ehhez az SSO bejelentkezéshez itt még nincs fiók. Kérjük, forduljon a háztartás rendszergazdájához.",
+diff --git a/public/locales/id.json b/public/locales/id.json
+index d729ed2..a5616f8 100644
+--- a/public/locales/id.json
++++ b/public/locales/id.json
+@@ -3482,6 +3482,7 @@
+         "hidePassword": "Sembunyikan kata sandi",
+         "version": "v{{version}}",
+         "loginWithSso": "Masuk dengan SSO",
++        "loginWithHomeAssistant": "Masuk dengan Home Assistant",
+         "orDivider": "atau",
+         "ssoError": "Masuk SSO gagal. Silakan coba lagi.",
+         "ssoNoAccount": "Belum ada akun di sini untuk masuk SSO ini. Silakan hubungi administrator rumah tangga Anda.",
+diff --git a/public/locales/it.json b/public/locales/it.json
+index 91d8052..9c94ce9 100644
+--- a/public/locales/it.json
++++ b/public/locales/it.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Nascondi password",
+         "version": "v{{version}}",
+         "loginWithSso": "Accedi con SSO",
++        "loginWithHomeAssistant": "Accedi con Home Assistant",
+         "orDivider": "o",
+         "ssoError": "Accesso SSO non riuscito. Riprova.",
+         "ssoNoAccount": "Non esiste ancora un account qui per questo accesso SSO. Contatta l'amministratore della tua famiglia.",
+diff --git a/public/locales/ja.json b/public/locales/ja.json
+index 40ca4ca..f4fe8c7 100644
+--- a/public/locales/ja.json
++++ b/public/locales/ja.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "パスワードを非表示",
+         "version": "v{{version}}",
+         "loginWithSso": "SSOでサインイン",
++        "loginWithHomeAssistant": "Home Assistant でサインイン",
+         "orDivider": "または",
+         "ssoError": "SSOサインインに失敗しました。もう一度お試しください。",
+         "ssoNoAccount": "このSSOサインインに対応するアカウントはまだ存在しません。世帯の管理者にお問い合わせください。",
+diff --git a/public/locales/ko.json b/public/locales/ko.json
+index 7133704..42fc8c3 100644
+--- a/public/locales/ko.json
++++ b/public/locales/ko.json
+@@ -3482,6 +3482,7 @@
+         "hidePassword": "비밀번호 숨기기",
+         "version": "v{{version}}",
+         "loginWithSso": "SSO로 로그인",
++        "loginWithHomeAssistant": "Home Assistant로 로그인",
+         "orDivider": "또는",
+         "ssoError": "SSO 로그인에 실패했습니다. 다시 시도해 주세요.",
+         "ssoNoAccount": "이 SSO 로그인에 해당하는 계정이 아직 없습니다. 가정의 관리자에게 문의해 주세요.",
+diff --git a/public/locales/nb.json b/public/locales/nb.json
+index cd317ee..cbf85f0 100644
+--- a/public/locales/nb.json
++++ b/public/locales/nb.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Skjul passord",
+         "version": "v{{version}}",
+         "loginWithSso": "Logg inn med SSO",
++        "loginWithHomeAssistant": "Logg inn med Home Assistant",
+         "orDivider": "eller",
+         "ssoError": "SSO-innlogging mislyktes. Vennligst prøv igjen.",
+         "ssoNoAccount": "Det finnes ingen konto her ennå for denne SSO-innloggingen. Vennligst kontakt administratoren for husholdningen din.",
+diff --git a/public/locales/nl.json b/public/locales/nl.json
+index 6dbeeab..402fe52 100644
+--- a/public/locales/nl.json
++++ b/public/locales/nl.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Wachtwoord verbergen",
+         "version": "v{{version}}",
+         "loginWithSso": "Aanmelden met SSO",
++        "loginWithHomeAssistant": "Inloggen met Home Assistant",
+         "orDivider": "of",
+         "ssoError": "SSO-aanmelding mislukt. Probeer het opnieuw.",
+         "ssoNoAccount": "Er is hier nog geen account voor deze SSO-aanmelding. Neem contact op met de beheerder van je huishouden.",
+diff --git a/public/locales/pl.json b/public/locales/pl.json
+index 4b04cf7..a3784a2 100644
+--- a/public/locales/pl.json
++++ b/public/locales/pl.json
+@@ -3708,6 +3708,7 @@
+         "hidePassword": "Ukryj hasło",
+         "version": "v{{version}}",
+         "loginWithSso": "Zaloguj się przez SSO",
++        "loginWithHomeAssistant": "Zaloguj się przez Home Assistant",
+         "orDivider": "lub",
+         "ssoError": "Logowanie SSO nie powiodło się. Spróbuj ponownie.",
+         "ssoNoAccount": "Dla tego logowania SSO nie ma tu jeszcze konta. Skontaktuj się z administratorem swojego gospodarstwa domowego.",
+diff --git a/public/locales/pt-BR.json b/public/locales/pt-BR.json
+index b1f00ef..319aaa8 100644
+--- a/public/locales/pt-BR.json
++++ b/public/locales/pt-BR.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Ocultar senha",
+         "version": "v{{version}}",
+         "loginWithSso": "Entrar com SSO",
++        "loginWithHomeAssistant": "Entrar com o Home Assistant",
+         "orDivider": "ou",
+         "ssoError": "O login SSO falhou. Por favor, tente novamente.",
+         "ssoNoAccount": "Ainda não existe uma conta aqui para este login SSO. Contate o administrador do seu grupo familiar.",
+diff --git a/public/locales/pt.json b/public/locales/pt.json
+index b77b089..495dc25 100644
+--- a/public/locales/pt.json
++++ b/public/locales/pt.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Ocultar senha",
+         "version": "v{{version}}",
+         "loginWithSso": "Entrar com SSO",
++        "loginWithHomeAssistant": "Iniciar sessão com o Home Assistant",
+         "orDivider": "ou",
+         "ssoError": "O login SSO falhou. Por favor, tente novamente.",
+         "ssoNoAccount": "Ainda não existe uma conta aqui para este login SSO. Contacte o administrador do seu agregado familiar.",
+diff --git a/public/locales/ru.json b/public/locales/ru.json
+index 7063c93..dab59a7 100644
+--- a/public/locales/ru.json
++++ b/public/locales/ru.json
+@@ -3690,6 +3690,7 @@
+         "hidePassword": "Скрыть пароль",
+         "version": "v{{version}}",
+         "loginWithSso": "Войти через SSO",
++        "loginWithHomeAssistant": "Войти через Home Assistant",
+         "orDivider": "или",
+         "ssoError": "Вход через SSO не удался. Повторите попытку.",
+         "ssoNoAccount": "Для этого входа через SSO здесь ещё нет учётной записи. Обратитесь к администратору вашего домохозяйства.",
+diff --git a/public/locales/sv.json b/public/locales/sv.json
+index d8ca685..5fed792 100644
+--- a/public/locales/sv.json
++++ b/public/locales/sv.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Dölj lösenord",
+         "version": "v{{version}}",
+         "loginWithSso": "Logga in med SSO",
++        "loginWithHomeAssistant": "Logga in med Home Assistant",
+         "orDivider": "eller",
+         "ssoError": "SSO-inloggning misslyckades. Försök igen.",
+         "ssoNoAccount": "Det finns ännu inget konto här för den här SSO-inloggningen. Kontakta administratören för ditt hushåll.",
+diff --git a/public/locales/tr.json b/public/locales/tr.json
+index a7ab75d..410ed73 100644
+--- a/public/locales/tr.json
++++ b/public/locales/tr.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Şifreyi gizle",
+         "version": "v{{version}}",
+         "loginWithSso": "SSO ile giriş yap",
++        "loginWithHomeAssistant": "Home Assistant ile giriş yap",
+         "orDivider": "veya",
+         "ssoError": "SSO girişi başarısız oldu. Lütfen tekrar deneyin.",
+         "ssoNoAccount": "Bu SSO girişi için burada henüz bir hesap yok. Lütfen hane yöneticinizle iletişime geçin.",
+diff --git a/public/locales/uk.json b/public/locales/uk.json
+index 14a226d..f3e75f2 100644
+--- a/public/locales/uk.json
++++ b/public/locales/uk.json
+@@ -3690,6 +3690,7 @@
+         "hidePassword": "Приховати пароль",
+         "version": "v{{version}}",
+         "loginWithSso": "Увійти через SSO",
++        "loginWithHomeAssistant": "Увійти через Home Assistant",
+         "orDivider": "або",
+         "ssoError": "Вхід через SSO не вдався. Спробуйте ще раз.",
+         "ssoNoAccount": "Для цього входу через SSO тут ще немає облікового запису. Зверніться до адміністратора вашого домогосподарства.",
+diff --git a/public/locales/vi.json b/public/locales/vi.json
+index fe8f9c0..cbe2e97 100644
+--- a/public/locales/vi.json
++++ b/public/locales/vi.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "Ẩn mật khẩu",
+         "version": "v{{version}}",
+         "loginWithSso": "Đăng nhập với SSO",
++        "loginWithHomeAssistant": "Đăng nhập bằng Home Assistant",
+         "orDivider": "hoặc",
+         "ssoError": "Đăng nhập SSO thất bại. Vui lòng thử lại.",
+         "ssoNoAccount": "Chưa có tài khoản nào ở đây cho lần đăng nhập SSO này. Vui lòng liên hệ quản trị viên hộ gia đình của bạn.",
+diff --git a/public/locales/zh-Hant.json b/public/locales/zh-Hant.json
+index faa10bd..0e53911 100644
+--- a/public/locales/zh-Hant.json
++++ b/public/locales/zh-Hant.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "隱藏密碼",
+         "version": "v{{version}}",
+         "loginWithSso": "透過SSO登入",
++        "loginWithHomeAssistant": "使用 Home Assistant 登入",
+         "orDivider": "或",
+         "ssoError": "SSO登入失敗，請重試。",
+         "ssoNoAccount": "此SSO登入尚無對應帳戶，請聯絡您家庭的管理員。",
+diff --git a/public/locales/zh.json b/public/locales/zh.json
+index 0e0e7bd..20448b4 100644
+--- a/public/locales/zh.json
++++ b/public/locales/zh.json
+@@ -3464,6 +3464,7 @@
+         "hidePassword": "隐藏密码",
+         "version": "v{{version}}",
+         "loginWithSso": "通过SSO登录",
++        "loginWithHomeAssistant": "使用 Home Assistant 登录",
+         "orDivider": "或",
+         "ssoError": "SSO登录失败，请重试。",
+         "ssoNoAccount": "此SSO登录尚无对应账户，请联系您家庭的管理员。",
+diff --git a/public/pages/login.js b/public/pages/login.js
+index 490f18e..4d6caff 100644
+--- a/public/pages/login.js
++++ b/public/pages/login.js
+@@ -37,6 +37,8 @@ export async function render(container) {
+   // Passwort-Login nie blockiert – dann wird ohne SSO gerendert.
+   const oidc = await fetchOidcConfig();
+   const ssoEnabled = oidc?.enabled === true;
++  // Steht Home Assistant hinter dem SSO-Ablauf, sagt der Knopf das auch.
++  const ssoLabel = oidc?.provider === 'homeassistant' ? t('login.loginWithHomeAssistant') : t('login.loginWithSso');
+   // SSO als einziger Weg hinein (#847). Bewusst an `ssoEnabled` gekoppelt: eine
+   // Anmeldeseite ganz ohne Weg hinein waere schlimmer als eine mit einem zu
+   // viel. Der Server haelt dieselbe Regel, hier ist sie nur die Anzeige davon -
+@@ -57,7 +59,7 @@ export async function render(container) {
+         ${!passwordLoginEnabled ? `
+         <div class="auth-form" id="sso-only-block">
+           <p class="auth-form__sso-only">${esc(t('login.ssoOnlyHint'))}</p>
+-          <a href="/api/v1/auth/oidc/start" class="btn btn--primary auth-form__submit">${esc(t('login.loginWithSso'))}</a>
++          <a href="/api/v1/auth/oidc/start" class="btn btn--primary auth-form__submit">${esc(ssoLabel)}</a>
+           ${guestPasswordLoginEnabled ? `
+           <p class="auth-form__forgot">
+             <button type="button" class="auth-linkish" id="show-password-form">${esc(t('login.guestPasswordLogin'))}</button>
+@@ -103,7 +105,7 @@ export async function render(container) {
+           </button>
+           ${ssoEnabled && passwordLoginEnabled ? `
+           <div class="auth-divider">${esc(t('login.orDivider'))}</div>
+-          <a href="/api/v1/auth/oidc/start" class="btn btn--secondary auth-form__submit">${esc(t('login.loginWithSso'))}</a>
++          <a href="/api/v1/auth/oidc/start" class="btn btn--secondary auth-form__submit">${esc(ssoLabel)}</a>
+           ` : ''}
+           <p class="auth-form__forgot" hidden>
+             <a href="/forgot-password" data-link>${esc(t('login.forgotPassword'))}</a>
+@@ -132,6 +134,8 @@ export async function render(container) {
+   container.querySelectorAll('a[data-link]').forEach((a) =>
+     a.addEventListener('click', (e) => { e.preventDefault(); window.yuvomi.navigate(a.getAttribute('href')); }));
+ 
++  if (ssoEnabled) wireFramedSso(container);
++
+   // OIDC-Fehlermeldung aus URL-Parameter anzeigen (z.B. ?error=oidc_failed nach gescheitertem Callback)
+   const urlParams = new URLSearchParams(window.location.search);
+   const ssoError = urlParams.get('error');
+@@ -417,6 +421,47 @@ function renderSecondFactor(container, { recoveryAvailable }) {
+   });
+ }
+ 
++/**
++ * SSO aus einer eingebetteten Yuvomi (z. B. als Panel in Home Assistant oder
++ * als Webseiten-Karte in einem Dashboard).
++ *
++ * Anmeldeanbieter verbieten fast immer, dass ihre Login-Seite in einem fremden
++ * Frame steht (`X-Frame-Options`/`frame-ancestors`) - der Klick auf „Mit SSO
++ * anmelden" endete im Frame deshalb auf einer leeren, blockierten Seite. Im
++ * Frame oeffnet der Knopf den Ablauf daher in einem eigenen Fenster. Das
++ * Sitzungs-Cookie, das der Rueckweg dort setzt, gilt fuer denselben Ursprung,
++ * also auch fuer den Frame: der Frame fragt in kurzen Abstaenden nach, ob die
++ * Sitzung steht, und laedt dann neu. Ohne Frame bleibt alles, wie es war.
++ */
++function wireFramedSso(container) {
++  let framed;
++  try { framed = window.self !== window.top; } catch { framed = true; }
++  if (!framed) return;
++
++  const POLL_MS = 2000;
++  const POLL_LIMIT_MS = 10 * 60 * 1000;
++  let timer = null;
++
++  const poll = (startedAt) => {
++    if (!container.isConnected || Date.now() - startedAt > POLL_LIMIT_MS) return;
++    fetch('/api/v1/auth/me', { cache: 'no-store', credentials: 'same-origin' })
++      .then((res) => {
++        if (res.ok) { window.location.replace('/'); return; }
++        timer = setTimeout(() => poll(startedAt), POLL_MS);
++      })
++      .catch(() => { timer = setTimeout(() => poll(startedAt), POLL_MS); });
++  };
++
++  container.querySelectorAll('a[href="/api/v1/auth/oidc/start"]').forEach((a) => {
++    a.target = '_blank';
++    a.rel = 'noopener';
++    a.addEventListener('click', () => {
++      clearTimeout(timer);
++      timer = setTimeout(() => poll(Date.now()), POLL_MS);
++    });
++  });
++}
++
+ function showError(el, message) {
+   el.textContent = message;
+   el.hidden = false;
+diff --git a/server/auth.js b/server/auth.js
+index e275b93..f2d052f 100644
+--- a/server/auth.js
++++ b/server/auth.js
+@@ -42,7 +42,12 @@ import {
+   getConfig as getOidcConfig,
+   exchangeAuthorizationCode,
+   describeOidcError,
++  ssoProvider,
+ } from './services/oidc.js';
++import {
++  buildHomeAssistantAuthorizationUrl,
++  completeHomeAssistantLogin,
++} from './services/homeassistant-auth.js';
+ import { emailService as defaultEmailService } from './services/email.js';
+ import { passwordResetService as defaultResetService } from './services/password-reset.js';
+ import { inviteService as defaultInviteService } from './services/invites.js';
+@@ -2373,6 +2378,9 @@ router.get('/oidc/config', (_req, res) => {
+   const passwordLoginEnabled = isPasswordLoginEnabled();
+   res.json({
+     enabled: isOidcEnabled(),
++    // Welche Quelle hinter „Mit SSO anmelden" steht, damit die Anmeldeseite den
++    // Knopf benennen kann (`oidc`, `homeassistant` oder null).
++    provider: ssoProvider(),
+     password_login_enabled: passwordLoginEnabled,
+     guest_password_login_enabled: !passwordLoginEnabled && hasSplitExpenseGuests(),
+   });
+@@ -2392,6 +2400,8 @@ router.get('/oidc/config', (_req, res) => {
+  * @param {object} extra  zusätzliche Session-Felder, z. B. { linkUserId }
+  */
+ async function beginOidcFlow(req, config, extra = {}) {
++  if (config.homeassistant) return beginHomeAssistantFlow(req, config, extra);
++
+   const state         = oidcClient.randomState();
+   const nonce         = oidcClient.randomNonce();
+   const codeVerifier  = oidcClient.randomPKCECodeVerifier();
+@@ -2418,6 +2428,26 @@ async function beginOidcFlow(req, config, extra = {}) {
+   }).href;
+ }
+ 
++/**
++ * Gegenstueck von `beginOidcFlow` fuer Home Assistant: dieselben Schutzwerte
++ * (state gegen Login-CSRF, PKCE gegen Code-Injection) in derselben Session-
++ * Ablage. Eine nonce gibt es nicht - Home Assistant stellt kein ID-Token aus.
++ */
++async function beginHomeAssistantFlow(req, config, extra = {}) {
++  const state         = oidcClient.randomState();
++  const codeVerifier  = oidcClient.randomPKCECodeVerifier();
++  const codeChallenge = await oidcClient.calculatePKCECodeChallenge(codeVerifier);
++  const redirectUri   = config.redirectUri;
++
++  req.session.oidc = { state, codeVerifier, redirectUri, provider: 'homeassistant', ...extra };
++
++  await new Promise((resolve, reject) =>
++    req.session.save(err => (err ? reject(err) : resolve()))
++  );
++
++  return buildHomeAssistantAuthorizationUrl(config, { redirectUri, state, codeChallenge });
++}
++
+ router.get('/oidc/start', refuseWhileRestoring, async (req, res) => {
+   try {
+     const config = await getOidcConfig();
+@@ -2532,24 +2562,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
+       return res.redirect('/login?error=oidc_state_mismatch');
+     }
+ 
+-    // Der Tausch sendet die redirect_uri der Authorize-Anfrage woertlich; von
+-    // der eingehenden Anfrage kommt nur die Query (code, state, ...), weder
+-    // Pfad noch Host oder Schema (#1768). Er validiert state, tauscht den Code
+-    // gegen Tokens und prüft Signatur, iss, aud, exp sowie nonce am ID-Token.
+     const queryStart = req.originalUrl.indexOf('?');
+-    const tokens = await exchangeAuthorizationCode(config, {
+-      redirectUri: stored.redirectUri,
+-      query:       queryStart === -1 ? '' : req.originalUrl.slice(queryStart),
+-      checks: {
+-        expectedState:    stored.state,
+-        expectedNonce:    stored.nonce,
+-        pkceCodeVerifier: stored.codeVerifier,
+-      },
+-    });
++    const query = queryStart === -1 ? '' : req.originalUrl.slice(queryStart);
++
++    // Ein Lauf, der bei der einen Quelle begann, endet nicht bei der anderen
++    // (Konfiguration zwischen Start und Rueckweg geaendert).
++    if ((stored.provider === 'homeassistant') !== !!config.homeassistant) {
++      log.warn('OIDC callback: Lauf mit einer anderen SSO-Quelle begonnen');
++      return res.redirect('/login?error=oidc_state_mismatch');
++    }
++
++    let claims;
++    let userinfo;
++    if (config.homeassistant) {
++      // Home Assistant: state pruefen, Code tauschen, Benutzer ueber die
++      // WebSocket-API erfragen, Token widerrufen (services/homeassistant-auth.js).
++      try {
++        claims = await completeHomeAssistantLogin(config, new URLSearchParams(query), stored, log);
++      } catch (err) {
++        if (err.code === 'state_mismatch') {
++          log.warn('Home Assistant callback: state mismatch');
++          return res.redirect('/login?error=oidc_state_mismatch');
++        }
++        throw err;
++      }
++      userinfo = { name: claims.name };
++    } else {
++      // Der Tausch sendet die redirect_uri der Authorize-Anfrage woertlich; von
++      // der eingehenden Anfrage kommt nur die Query (code, state, ...), weder
++      // Pfad noch Host oder Schema (#1768). Er validiert state, tauscht den Code
++      // gegen Tokens und prüft Signatur, iss, aud, exp sowie nonce am ID-Token.
++      const tokens = await exchangeAuthorizationCode(config, {
++        redirectUri: stored.redirectUri,
++        query,
++        checks: {
++          expectedState:    stored.state,
++          expectedNonce:    stored.nonce,
++          pkceCodeVerifier: stored.codeVerifier,
++        },
++      });
+ 
+-    // Identität aus dem validierten ID-Token; fetchUserInfo erzwingt sub-Abgleich
+-    const claims   = tokens.claims();
+-    const userinfo = await oidcClient.fetchUserInfo(config, tokens.access_token, claims.sub);
++      // Identität aus dem validierten ID-Token; fetchUserInfo erzwingt sub-Abgleich
++      claims   = tokens.claims();
++      userinfo = await oidcClient.fetchUserInfo(config, tokens.access_token, claims.sub);
++    }
+ 
+     // Verknüpfungs-Lauf (#832): der Nutzer ist bereits angemeldet und bindet
+     // sein OIDC-Konto an genau dieses Konto. Kein Anlegen, kein Zuordnen über
+diff --git a/server/services/homeassistant-auth.js b/server/services/homeassistant-auth.js
+new file mode 100644
+index 0000000..01d76d2
+--- /dev/null
++++ b/server/services/homeassistant-auth.js
+@@ -0,0 +1,245 @@
++/**
++ * Modul: Home Assistant als Anmeldequelle
++ * Zweck: Home Assistant spricht OAuth 2.0 (Authorization Code + PKCE, IndieAuth-
++ *        artige Client-IDs), aber kein OpenID Connect: es gibt weder Discovery
++ *        noch ID-Token noch Userinfo. Dieses Modul schliesst die Luecke fuer
++ *        genau einen Zweck - festzustellen, WELCHER Home-Assistant-Benutzer sich
++ *        gerade angemeldet hat - und liefert das Ergebnis in der Form, die der
++ *        bestehende SSO-Ablauf in `auth.js` ohnehin verarbeitet (sub, iss, name).
++ *
++ *        Damit gilt fuer Home Assistant alles, was fuer OIDC gilt: Verknuepfen
++ *        unter Einstellungen > Konto, `OIDC_ALLOW_SIGNUP`, SSO-only-Konten,
++ *        `AUTH_ALLOW_PASSWORD_LOGIN=false`, zweiter Faktor, Schutz des letzten
++ *        SSO-Admins.
++ *
++ * Konfiguration (Umgebung):
++ *   HOMEASSISTANT_URL           Adresse, unter der der BROWSER Home Assistant
++ *                               erreicht (Login-Seite), z. B. https://ha.example.com
++ *   HOMEASSISTANT_INTERNAL_URL  optional: Adresse fuer die Server-Anfragen
++ *                               (Token, WebSocket), z. B. http://homeassistant:8123
++ *   OIDC_REDIRECT_URI           optional: Rueckweg; Standard ist
++ *                               BASE_URL + /api/v1/auth/oidc/callback
++ *
++ * Home Assistant erkennt Clients an ihrer URL (client_id). Die Redirect-URI
++ * muss auf demselben Host liegen, deshalb ist die client_id der Ursprung der
++ * Redirect-URI. Eine Registrierung in Home Assistant ist nicht noetig.
++ *
++ * Nach dem Abfragen des Benutzers wird das Refresh-Token sofort widerrufen:
++ * Yuvomi braucht keinen dauerhaften Zugriff auf Home Assistant, und jede
++ * Anmeldung hinterliesse sonst ein gueltiges Token in Home Assistant.
++ */
++
++const CALLBACK_PATH = '/api/v1/auth/oidc/callback';
++const REQUEST_TIMEOUT_MS = 10_000;
++
++function trimSlash(url) {
++  return String(url || '').trim().replace(/\/+$/, '');
++}
++
++/**
++ * Die Redirect-URI des HA-Ablaufs, oder null, wenn sie sich nicht bestimmen laesst.
++ * @returns {string|null}
++ */
++export function homeAssistantRedirectUri() {
++  const explicit = (process.env.OIDC_REDIRECT_URI || '').trim();
++  if (explicit) return explicit;
++  const base = trimSlash(process.env.BASE_URL);
++  return base ? `${base}${CALLBACK_PATH}` : null;
++}
++
++/**
++ * Ist Home Assistant als Anmeldequelle konfiguriert?
++ * Gelesen pro Aufruf (wie `isOidcEnabled`), damit Tests beide Zustaende fahren.
++ * @returns {boolean}
++ */
++export function isHomeAssistantAuthConfigured() {
++  if (!trimSlash(process.env.HOMEASSISTANT_URL)) return false;
++  const redirectUri = homeAssistantRedirectUri();
++  if (!redirectUri) return false;
++  try {
++    new URL(process.env.HOMEASSISTANT_URL);
++    new URL(redirectUri);
++    return true;
++  } catch {
++    return false;
++  }
++}
++
++/**
++ * Die Konfiguration des HA-Ablaufs. `homeassistant: true` unterscheidet sie in
++ * `auth.js` von der `openid-client`-Configuration.
++ */
++export function getHomeAssistantConfig() {
++  if (!isHomeAssistantAuthConfigured()) return null;
++  const url = trimSlash(process.env.HOMEASSISTANT_URL);
++  const internalUrl = trimSlash(process.env.HOMEASSISTANT_INTERNAL_URL) || url;
++  const redirectUri = homeAssistantRedirectUri();
++  return {
++    homeassistant: true,
++    url,
++    internalUrl,
++    redirectUri,
++    clientId: `${new URL(redirectUri).origin}/`,
++  };
++}
++
++/**
++ * Baut die Authorize-URL der Home-Assistant-Anmeldeseite.
++ */
++export function buildHomeAssistantAuthorizationUrl(config, { redirectUri, state, codeChallenge }) {
++  const url = new URL(`${config.url}/auth/authorize`);
++  url.searchParams.set('response_type', 'code');
++  url.searchParams.set('client_id', config.clientId);
++  url.searchParams.set('redirect_uri', redirectUri);
++  url.searchParams.set('state', state);
++  url.searchParams.set('code_challenge', codeChallenge);
++  url.searchParams.set('code_challenge_method', 'S256');
++  return url.href;
++}
++
++function withTimeout(ms) {
++  const controller = new AbortController();
++  const timer = setTimeout(() => controller.abort(), ms);
++  return { signal: controller.signal, done: () => clearTimeout(timer) };
++}
++
++/**
++ * Tauscht den Code gegen Tokens.
++ * @returns {Promise<{access_token: string, refresh_token?: string}>}
++ */
++export async function exchangeHomeAssistantCode(config, { code, codeVerifier }) {
++  const body = new URLSearchParams({
++    grant_type: 'authorization_code',
++    code,
++    client_id: config.clientId,
++    code_verifier: codeVerifier,
++  });
++  const t = withTimeout(REQUEST_TIMEOUT_MS);
++  try {
++    const res = await fetch(`${config.internalUrl}/auth/token`, {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
++      body,
++      signal: t.signal,
++      redirect: 'error',
++    });
++    const data = await res.json().catch(() => ({}));
++    if (!res.ok || typeof data.access_token !== 'string') {
++      const err = new Error(`Home Assistant token exchange failed (HTTP ${res.status})`);
++      err.error = data.error;
++      err.error_description = data.error_description;
++      throw err;
++    }
++    return data;
++  } finally {
++    t.done();
++  }
++}
++
++/**
++ * Fragt ueber die WebSocket-API ab, wem das Access-Token gehoert.
++ * @returns {Promise<{id: string, name: string, is_admin: boolean, is_owner: boolean}>}
++ */
++export function fetchHomeAssistantUser(config, accessToken) {
++  const wsUrl = `${config.internalUrl.replace(/^http/, 'ws')}/api/websocket`;
++  return new Promise((resolve, reject) => {
++    let settled = false;
++    const ws = new WebSocket(wsUrl);
++    // WebSocket#send ist synchron; der eigene Name haelt es auseinander von den
++    // async-`send()` der Benachrichtigungskanaele (test:after-response-jobs).
++    const sendJson = (obj) => ws.send(JSON.stringify(obj));
++    const finish = (fn, value) => {
++      if (settled) return;
++      settled = true;
++      clearTimeout(timer);
++      try { ws.close(); } catch { /* bereits zu */ }
++      fn(value);
++    };
++    const timer = setTimeout(
++      () => finish(reject, new Error('Home Assistant did not answer in time.')),
++      REQUEST_TIMEOUT_MS,
++    );
++    ws.addEventListener('error', () => finish(reject, new Error('Home Assistant WebSocket connection failed.')));
++    ws.addEventListener('close', () => finish(reject, new Error('Home Assistant closed the WebSocket connection.')));
++    ws.addEventListener('message', (event) => {
++      let msg;
++      try { msg = JSON.parse(String(event.data)); } catch { return; }
++      if (msg.type === 'auth_required') {
++        sendJson({ type: 'auth', access_token: accessToken });
++      } else if (msg.type === 'auth_invalid') {
++        finish(reject, new Error('Home Assistant rejected the access token.'));
++      } else if (msg.type === 'auth_ok') {
++        sendJson({ id: 1, type: 'auth/current_user' });
++      } else if (msg.type === 'result' && msg.id === 1) {
++        if (msg.success && msg.result?.id) finish(resolve, msg.result);
++        else finish(reject, new Error('Home Assistant did not return the current user.'));
++      }
++    });
++  });
++}
++
++/**
++ * Widerruft das Refresh-Token (und damit alle daraus erzeugten Access-Tokens).
++ * Fehler meldet der Aufrufer nur: die Anmeldung bei Yuvomi haengt nicht davon ab.
++ */
++export async function revokeHomeAssistantToken(config, refreshToken) {
++  if (!refreshToken) return;
++  const t = withTimeout(REQUEST_TIMEOUT_MS);
++  try {
++    await fetch(`${config.internalUrl}/auth/revoke`, {
++      method: 'POST',
++      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
++      body: new URLSearchParams({ token: refreshToken }),
++      signal: t.signal,
++      redirect: 'error',
++    });
++  } finally {
++    t.done();
++  }
++}
++
++/**
++ * Kompletter Rueckweg: prueft state, tauscht den Code, ermittelt den Benutzer
++ * und widerruft das Token. Liefert Claims in der Form des OIDC-Ablaufs.
++ *
++ * @param {object} config  getHomeAssistantConfig()
++ * @param {URLSearchParams} query  Query der Callback-Anfrage
++ * @param {{state: string, codeVerifier: string}} stored  Session-State des Laufs
++ * @param {{warn: Function}} [log]
++ * @returns {Promise<{sub: string, iss: string, name: string, is_admin: boolean}>}
++ */
++export async function completeHomeAssistantLogin(config, query, stored, log) {
++  if (query.get('error')) {
++    const err = new Error(`Home Assistant returned an error: ${query.get('error')}`);
++    err.error = query.get('error');
++    throw err;
++  }
++  // Der state schuetzt vor Login-CSRF; ohne openid-client prueft ihn niemand sonst.
++  const state = query.get('state');
++  if (!state || state !== stored.state) {
++    const err = new Error('state mismatch');
++    err.code = 'state_mismatch';
++    throw err;
++  }
++  const code = query.get('code');
++  if (!code) throw new Error('Home Assistant callback without code.');
++
++  const tokens = await exchangeHomeAssistantCode(config, { code, codeVerifier: stored.codeVerifier });
++  try {
++    const user = await fetchHomeAssistantUser(config, tokens.access_token);
++    return {
++      sub: String(user.id),
++      iss: config.url,
++      name: typeof user.name === 'string' ? user.name : undefined,
++      is_admin: !!(user.is_admin || user.is_owner),
++    };
++  } finally {
++    // Abgewartet statt nebenher gestartet: der Aufruf ist kurz (lokal, mit
++    // Timeout), und ein schwebendes Promise saehe ein laufender Restore nicht.
++    try {
++      await revokeHomeAssistantToken(config, tokens.refresh_token);
++    } catch (e) {
++      log?.warn?.(`Home Assistant token revoke failed: ${e.message}`);
++    }
++  }
++}
+diff --git a/server/services/oidc.js b/server/services/oidc.js
+index d8a91e8..481ce4a 100644
+--- a/server/services/oidc.js
++++ b/server/services/oidc.js
+@@ -6,6 +6,7 @@
+  */
+ import { AsyncLocalStorage } from 'node:async_hooks';
+ import * as client from 'openid-client';
++import { getHomeAssistantConfig, isHomeAssistantAuthConfigured } from './homeassistant-auth.js';
+ 
+ let _config = null;
+ 
+@@ -43,6 +44,11 @@ function providerFetch(url, options) {
+  * @returns {boolean}
+  */
+ export function isOidcEnabled() {
++  return isGenericOidcConfigured() || isHomeAssistantAuthConfigured();
++}
++
++/** Sind die vier Variablen eines OpenID-Connect-Anbieters gesetzt? */
++function isGenericOidcConfigured() {
+   return !!(
+     process.env.OIDC_ISSUER &&
+     process.env.OIDC_CLIENT_ID &&
+@@ -51,6 +57,22 @@ export function isOidcEnabled() {
+   );
+ }
+ 
++/**
++ * Welche Quelle den SSO-Ablauf bedient: ein OpenID-Connect-Anbieter (`oidc`),
++ * Home Assistant (`homeassistant`) oder keine (`null`).
++ *
++ * Es gibt genau EINE Quelle, weil ein Konto genau eine SSO-Bindung
++ * (`users.oidc_sub`) hat. Ist beides konfiguriert, gewinnt der OIDC-Anbieter:
++ * er war zuerst da, und eine zusaetzlich gesetzte Variable soll bestehende
++ * Bindungen nicht still auf eine andere Quelle umlenken.
++ * @returns {'oidc'|'homeassistant'|null}
++ */
++export function ssoProvider() {
++  if (isGenericOidcConfigured()) return 'oidc';
++  if (isHomeAssistantAuthConfigured()) return 'homeassistant';
++  return null;
++}
++
+ /**
+  * Darf eine SSO-Anmeldung ein noch unbekanntes Konto ANLEGEN? (#654)
+  *
+@@ -172,7 +194,11 @@ export function passwordLoginWarning({ hasLinkedSsoAccount = true } = {}) {
+  * @returns {Promise<import('openid-client').Configuration|null>}
+  */
+ export async function getConfig() {
+-  if (!isOidcEnabled()) return null;
++  const provider = ssoProvider();
++  if (!provider) return null;
++  // Home Assistant hat keine Discovery; die Konfiguration ist billig und wird
++  // nicht gecacht, damit geaenderte Variablen ohne Neustart greifen (Tests).
++  if (provider === 'homeassistant') return getHomeAssistantConfig();
+   if (_config) return _config;
+ 
+   // Vor der Discovery: ein Tippfehler im Schalter soll beim ersten SSO-Klick
+-- 
+2.39.5
+

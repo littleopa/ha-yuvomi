@@ -15,6 +15,22 @@ configuration:
       (Nginx Proxy Manager, Caddy, Traefik, Cloudflare Tunnel). Setzt sichere
       Cookies und vertraut den Weiterleitungs-Headern des Proxys. Aus lassen,
       wenn du Yuvomi direkt über http://<home-assistant>:3000 öffnest.
+  homeassistant_login:
+    name: Mit Home Assistant anmelden
+    description: >-
+      Fügt Yuvomi den Knopf „Mit Home Assistant anmelden“ hinzu. Bestehende Yuvomi-Konten werden einmalig unter Einstellungen > Konto verknüpft.
+  homeassistant_url:
+    name: Adresse von Home Assistant
+    description: >-
+      Die Adresse, unter der dein Browser Home Assistant öffnet, z. B. https://ha.example.de.
+  allow_signup:
+    name: Konten für neue Home-Assistant-Benutzer anlegen
+    description: >-
+      Aus: Nur Home-Assistant-Benutzer, die mit einem bestehenden Yuvomi-Konto verknüpft sind, können sich anmelden.
+  password_login:
+    name: Anmeldung mit Passwort erlauben
+    description: >-
+      Ausschalten, um nur noch die Anmeldung über Home Assistant zuzulassen (greift, sobald ein Admin-Konto verknüpft ist).
   weather_city:
     name: Wetter – Stadt
     description: Stadt für das Wetter-Widget.
