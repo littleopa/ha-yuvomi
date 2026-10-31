@@ -3,6 +3,7 @@ FROM ${BUILD_FROM}
 
 COPY run.sh /run.sh
 COPY options.mjs /options.mjs
+COPY ingress.mjs /ingress.mjs
 RUN chmod +x /run.sh
 
 HEALTHCHECK --interval=30s --timeout=10s --start-period=60s --retries=3 \

@@ -46,6 +46,7 @@ const env = {
   BACKUP_KEEP: String(opts.backup_keep ?? 7),
 };
 
+if (opts.sidebar_url) env.YUVOMI_SIDEBAR_URL = opts.sidebar_url;
 if (opts.base_url) env.BASE_URL = opts.base_url.replace(/\/+$/, '');
 if (opts.behind_https_proxy) {
   env.SESSION_SECURE = 'true';

@@ -7,6 +7,9 @@ node /options.mjs > "$ENV_FILE"
 . "$ENV_FILE"
 rm -f "$ENV_FILE"
 
+# Sidebar (ingress) page, runs unprivileged next to Yuvomi.
+gosu node node /ingress.mjs &
+
 echo "[ha-yuvomi] Starting Yuvomi on port ${PORT} (data in /data)"
 
 # Hand over to the upstream entrypoint: it fixes volume ownership and drops

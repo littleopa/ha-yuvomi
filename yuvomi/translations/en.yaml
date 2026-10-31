@@ -4,6 +4,10 @@ configuration:
     description: >-
       The address you use to open Yuvomi, e.g. https://family.example.com.
       Needed for calendar feeds, invitation links and OAuth callbacks.
+  sidebar_url:
+    name: Sidebar address
+    description: >-
+      Optional. Address shown in the Home Assistant sidebar panel. Defaults to the public URL.
   behind_https_proxy:
     name: Behind HTTPS reverse proxy
     description: >-

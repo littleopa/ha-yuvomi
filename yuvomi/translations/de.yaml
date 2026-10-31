@@ -4,6 +4,10 @@ configuration:
     description: >-
       Die Adresse, unter der du Yuvomi öffnest, z. B. https://family.example.de.
       Wird für Kalender-Feeds, Einladungslinks und OAuth-Rückleitungen gebraucht.
+  sidebar_url:
+    name: Adresse für die Seitenleiste
+    description: >-
+      Optional. Adresse, die im Seitenleisten-Panel von Home Assistant angezeigt wird. Standard ist die öffentliche URL.
   behind_https_proxy:
     name: Hinter HTTPS-Reverse-Proxy
     description: >-
