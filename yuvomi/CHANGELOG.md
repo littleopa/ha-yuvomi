@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.83.0-8
+
+- On a new installation, signing in with Home Assistant before setup no longer creates an
+  account. It leads to the setup page instead, so the first account is always the administrator.
+
 ## 2.83.0-7
 
 - Sign-in with Home Assistant updated to the reviewed version of the upstream pull request:

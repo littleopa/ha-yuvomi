@@ -1,7 +1,6 @@
 Sign in with Home Assistant for Yuvomi v2.83.0
 
-Runtime part of https://github.com/ulsklyc/yuvomi/pull/2428 (both commits:
-feat(auth): sign in with Home Assistant + fix(auth): ... after review),
+Runtime part of https://github.com/ulsklyc/yuvomi/pull/2428 (all three commits),
 rebased onto v2.83.0. Drop this patch once the PR is released.
 
 diff --git a/public/locales/ar.json b/public/locales/ar.json
@@ -769,7 +768,7 @@ index 11cb88b9c..7ac9ed73d 100644
    // Derselbe Grundsatz wie darueber: faellt der Katalog aus, bleibt der Hinweis
    // unter den Startrechten ohne Modulnamen, aber das Formular funktioniert.
 diff --git a/server/auth.js b/server/auth.js
-index e275b93c6..03270bf71 100644
+index e275b93c6..c2005c1e9 100644
 --- a/server/auth.js
 +++ b/server/auth.js
 @@ -42,7 +42,13 @@ import {
@@ -796,7 +795,30 @@ index e275b93c6..03270bf71 100644
    };
  }
  
-@@ -2373,6 +2382,9 @@ router.get('/oidc/config', (_req, res) => {
+@@ -1385,6 +1394,7 @@ function ssoLinkCandidates(database, address, { excludeUserId = null } = {}) {
+  * @param {import('better-sqlite3-multiple-ciphers').Database} database
+  * @param {{ sub: string, iss?: string, email?: string, email_verified?: boolean, name?: string, preferred_username?: string, username?: string }} claims
+  * @returns {{ id: number, role: string, [key: string]: any }|{ refused: string, accountIds: number[] }|null}
++ *   `{ refused: 'setup_required' }`, solange es noch gar kein Konto gibt.
+  *   `null`, wenn das Konto neu wäre und die automatische Kontoerstellung
+  *   abgeschaltet ist; `{ refused }` mit dem Redirect-Grund, wenn die Adresse
+  *   kein Konto eindeutig und sicher benennt.
+@@ -1462,6 +1472,14 @@ export function findOrCreateOidcUser(database, claims) {
+   //    jemand getroffen hat, und die soll der Schalter nicht zuruecknehmen.
+   if (!isOidcSignupAllowed()) return null;
+ 
++  //    Vor der Einrichtung legt SSO KEIN Konto an: das erste Konto ist der
++  //    Administrator aus /setup, und sobald irgendein Konto existiert, ist
++  //    /setup gesperrt. Ein per SSO angelegtes Mitglied waere sonst das erste
++  //    Konto, und der Haushalt stuende ohne jeden Administrator da.
++  if (!database.prepare('SELECT 1 FROM users LIMIT 1').get()) {
++    return { refused: 'setup_required', accountIds: [] };
++  }
++
+   // 4. Eindeutigen username ableiten (Kollision mit bestehenden Usernamen vermeiden).
+   //    Reihenfolge: preferred_username (Standard-Claim) → username (non-standard,
+   //    u. a. Synology DSM SSO) → sub. Die E-Mail ist bewusst KEIN Kandidat (#653):
+@@ -2373,6 +2391,9 @@ router.get('/oidc/config', (_req, res) => {
    const passwordLoginEnabled = isPasswordLoginEnabled();
    res.json({
      enabled: isOidcEnabled(),
@@ -806,7 +828,7 @@ index e275b93c6..03270bf71 100644
      password_login_enabled: passwordLoginEnabled,
      guest_password_login_enabled: !passwordLoginEnabled && hasSplitExpenseGuests(),
    });
-@@ -2392,6 +2404,8 @@ router.get('/oidc/config', (_req, res) => {
+@@ -2392,6 +2413,8 @@ router.get('/oidc/config', (_req, res) => {
   * @param {object} extra  zusätzliche Session-Felder, z. B. { linkUserId }
   */
  async function beginOidcFlow(req, config, extra = {}) {
@@ -815,7 +837,7 @@ index e275b93c6..03270bf71 100644
    const state         = oidcClient.randomState();
    const nonce         = oidcClient.randomNonce();
    const codeVerifier  = oidcClient.randomPKCECodeVerifier();
-@@ -2418,6 +2432,26 @@ async function beginOidcFlow(req, config, extra = {}) {
+@@ -2418,6 +2441,26 @@ async function beginOidcFlow(req, config, extra = {}) {
    }).href;
  }
  
@@ -842,7 +864,7 @@ index e275b93c6..03270bf71 100644
  router.get('/oidc/start', refuseWhileRestoring, async (req, res) => {
    try {
      const config = await getOidcConfig();
-@@ -2532,24 +2566,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
+@@ -2532,24 +2575,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
        return res.redirect('/login?error=oidc_state_mismatch');
      }
  
@@ -868,7 +890,10 @@ index e275b93c6..03270bf71 100644
 +      log.warn('OIDC callback: Lauf mit einer anderen SSO-Quelle begonnen');
 +      return res.redirect('/login?error=oidc_state_mismatch');
 +    }
-+
+ 
+-    // Identität aus dem validierten ID-Token; fetchUserInfo erzwingt sub-Abgleich
+-    const claims   = tokens.claims();
+-    const userinfo = await oidcClient.fetchUserInfo(config, tokens.access_token, claims.sub);
 +    let claims;
 +    let userinfo;
 +    if (config.homeassistant) {
@@ -898,10 +923,7 @@ index e275b93c6..03270bf71 100644
 +          pkceCodeVerifier: stored.codeVerifier,
 +        },
 +      });
- 
--    // Identität aus dem validierten ID-Token; fetchUserInfo erzwingt sub-Abgleich
--    const claims   = tokens.claims();
--    const userinfo = await oidcClient.fetchUserInfo(config, tokens.access_token, claims.sub);
++
 +      // Identität aus dem validierten ID-Token; fetchUserInfo erzwingt sub-Abgleich
 +      claims   = tokens.claims();
 +      userinfo = await oidcClient.fetchUserInfo(config, tokens.access_token, claims.sub);
@@ -909,7 +931,18 @@ index e275b93c6..03270bf71 100644
  
      // Verknüpfungs-Lauf (#832): der Nutzer ist bereits angemeldet und bindet
      // sein OIDC-Konto an genau dieses Konto. Kein Anlegen, kein Zuordnen über
-@@ -3208,11 +3268,12 @@ router.get('/users', requireAuth, (req, res) => {
+@@ -2600,6 +2669,10 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
+     // Kein Konto angelegt, keins verknuepft; der Grund steht im Redirect, und
+     // das Log sagt dem Admin, welche Konten er ansehen muss. Die Adresse selbst
+     // steht nicht im Log, die Konto-IDs genuegen.
++    if (user.refused === 'setup_required') {
++      log.warn(`OIDC sign-in before setup: no account is created until the first administrator exists. sub=${claims.sub}`);
++      return res.redirect('/setup');
++    }
+     if (user.refused) {
+       const ids = user.accountIds.join(', ');
+       if (user.refused === 'oidc_email_ambiguous') {
+@@ -3208,11 +3281,12 @@ router.get('/users', requireAuth, (req, res) => {
        ? db.get().prepare(`
            SELECT ${USER_PUBLIC_COLUMNS},
                   EXISTS(SELECT 1 FROM housekeeping_workers hw WHERE hw.user_id = users.id) AS is_worker,
@@ -924,7 +957,7 @@ index e275b93c6..03270bf71 100644
        : db.get().prepare(`
            SELECT ${USER_PUBLIC_COLUMNS},
                   EXISTS(SELECT 1 FROM housekeeping_workers hw WHERE hw.user_id = users.id) AS is_worker
-@@ -3433,8 +3494,54 @@ router.post('/api-tokens/:id/remove', requireAuth, requireAdmin, csrfMiddleware,
+@@ -3433,8 +3507,54 @@ router.post('/api-tokens/:id/remove', requireAuth, requireAdmin, csrfMiddleware,
   */
  function adminUserRow(userId) {
    return db.get()
@@ -981,7 +1014,7 @@ index e275b93c6..03270bf71 100644
  }
  
  /**
-@@ -3549,7 +3656,18 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
+@@ -3549,7 +3669,18 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
  
      // Erst hier, weil die Pruefung die E-Mail braucht: ein neues Konto ist noch
      // mit nichts verknuepft, also ist die Adresse sein einziger Weg hinein.
@@ -1001,7 +1034,7 @@ index e275b93c6..03270bf71 100644
      if (ssoOnlyError) return res.status(400).json({ error: ssoOnlyError, code: 400 });
  
      const hash = ssoOnly ? OIDC_PASSWORD_SENTINEL : await hashPassword(password);
-@@ -3561,6 +3679,10 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
+@@ -3561,6 +3692,10 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
            VALUES (?, ?, ?, ?, ?, ?, ?)
          `)
          .run(username, display_name, hash, avatar_color, normalizedAvatarData ?? null, role, family_role);
@@ -1012,7 +1045,7 @@ index e275b93c6..03270bf71 100644
        // Kinder-Startrechte (R20): in derselben Transaktion wie das Konto, damit
        // es nie einen Moment mit Budget und Haushaltshilfe-Loehnen gibt.
        applyChildStartPermissions(db.get(), {
-@@ -3669,11 +3791,28 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+@@ -3669,11 +3804,28 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
      // Ein bereits verknuepftes Konto braucht keine E-Mail mehr - sein `sub`
      // findet es. Sonst zaehlt die Adresse, die nach diesem Aufruf gilt.
      const linkedRow = db.get().prepare('SELECT oidc_sub FROM users WHERE id = ?').get(userId);
@@ -1042,7 +1075,7 @@ index e275b93c6..03270bf71 100644
        email: effectiveEmail,
        excludeUserId: userId,
      });
-@@ -3686,6 +3825,18 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+@@ -3686,6 +3838,18 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
      if (ssoOnly === false && isSsoOnlyAccount(existingHash) && !newPassword) {
        return res.status(400).json({ error: 'Turning off SSO-only requires setting a password.', code: 400 });
      }
@@ -1061,7 +1094,7 @@ index e275b93c6..03270bf71 100644
  
      // Ein Ehemaliger wird nicht Administrator (#1381): er kaeme nie an
      // `requireAdmin` vorbei, stuende aber als Administrator in der Verwaltung.
-@@ -3724,6 +3875,10 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+@@ -3724,6 +3888,10 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
        if (newPasswordHash) {
          db.get().prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newPasswordHash, userId);
        }
@@ -1073,10 +1106,18 @@ index e275b93c6..03270bf71 100644
        syncFamilyMemberArtifacts(db.get(), userId, {
          displayName,
 diff --git a/server/openapi/paths/auth.js b/server/openapi/paths/auth.js
-index bee8e2111..3ae6c64dc 100644
+index bee8e2111..8e7e036fc 100644
 --- a/server/openapi/paths/auth.js
 +++ b/server/openapi/paths/auth.js
-@@ -682,6 +682,7 @@ export function authPaths() {
+@@ -184,6 +184,7 @@ export function authPaths() {
+           + 'Two or more matching accounts redirect to /login?error=oidc_email_ambiguous; a single matching member account that has a password redirects to /login?error=oidc_link_required, and that member links SSO while signed in (POST /api/v1/auth/oidc/link/start). '
+           + 'Neither case creates or links an account, whatever OIDC_ALLOW_SIGNUP says. '
+           + 'With OIDC_ALLOW_SIGNUP=false an identity that matches no existing account is redirected to /login?error=oidc_signup_disabled instead of being provisioned. '
++          + 'Before setup (no account exists yet) no account is provisioned either, and the callback redirects to /setup, so the first account stays the administrator created there. '
+           + 'A link run started while signed in (POST /api/v1/auth/oidc/link/start) redirects to /settings/personal/account?oidc_linked=1, or on refusal to /settings/personal/account?oidc_link_error=<reason>: `user_gone` (the account no longer exists or can no longer sign in), `already_linked` (the account is linked to another identity), `sub_taken` (the identity is linked to another account).',
+         responses: {
+           302: { description: 'Redirect to app or login error page' },
+@@ -682,6 +683,7 @@ export function authPaths() {
  // #2267: die Gruende, die die Anmelde- und Kontorouten neben `error` senden.
  const INVALID_CODE = '`invalid_code` (400, the code is wrong or expired)';
  const NOT_ENABLED = '`not_enabled` (409, two-factor authentication is not turned on)';
@@ -1084,7 +1125,7 @@ index bee8e2111..3ae6c64dc 100644
  const DEACTIVATED_SUBJECT = '`account_deactivated` (400, the chosen account is deactivated)';
  const CASE_REASONS = {
    '/api/v1/auth/login': {
-@@ -692,6 +693,12 @@ const CASE_REASONS = {
+@@ -692,6 +694,12 @@ const CASE_REASONS = {
    '/api/v1/auth/2fa/recovery-codes': { post: `${INVALID_CODE}, ${NOT_ENABLED}` },
    '/api/v1/auth/logout-others': { post: '`browser_session_required` (403, only a signed-in browser session can sign out the other sessions, not an API token)' },
    '/api/v1/auth/setup': { post: '`setup_completed` (403, setup has already been completed)' },
