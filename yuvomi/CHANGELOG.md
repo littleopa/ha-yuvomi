@@ -1,5 +1,13 @@
 # Changelog
 
+## 2.83.0-7
+
+- Sign-in with Home Assistant updated to the reviewed version of the upstream pull request:
+  - Administrators can bind a member to a Home Assistant user ID in the member dialog
+    (Settings > Family), also for accounts without a password.
+  - New accounts get the Home Assistant display name as username instead of the user ID.
+  - New accounts always start as members, also for Home Assistant administrators.
+
 ## 2.83.0-6
 
 - Repository moved to littleopa/ha-yuvomi. Please update the repository URL in Home Assistant if you added it under an older name.

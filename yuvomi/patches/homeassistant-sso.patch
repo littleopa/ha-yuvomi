@@ -1,60 +1,23 @@
-From 444a618460840ddd9ec64338180793e341ab0a15 Mon Sep 17 00:00:00 2001
-From: Phillipxh <150742483+Phillipxh@users.noreply.github.com>
-Date: Sat, 31 Oct 2026 14:22:19 +0100
-Subject: [PATCH] feat(auth): sign in with Home Assistant
+Sign in with Home Assistant for Yuvomi v2.83.0
 
-Home Assistant speaks OAuth 2.0 but not OpenID Connect (no discovery, no
-ID token, no userinfo), so it cannot be used as OIDC_ISSUER. With
-HOMEASSISTANT_URL set, the existing SSO flow uses Home Assistant as its
-source instead: authorize with PKCE, code exchange, the user is read via
-the WebSocket API (auth/current_user) and the refresh token is revoked
-right away. Linking, OIDC_ALLOW_SIGNUP, SSO-only accounts,
-AUTH_ALLOW_PASSWORD_LOGIN and the second factor apply unchanged. A
-configured OIDC provider takes precedence.
-
-Co-Authored-By: Claude Opus 5.5 <noreply@anthropic.com>
-Claude-Session: https://claude.ai/code/session_019TNUHVPEM9ZvMaCtSc7RP5
-Signed-off-by: Phillipxh <150742483+Phillipxh@users.noreply.github.com>
----
- public/locales/ar.json                |   1 +
- public/locales/cs.json                |   1 +
- public/locales/de.json                |   1 +
- public/locales/el.json                |   1 +
- public/locales/en.json                |   1 +
- public/locales/es.json                |   1 +
- public/locales/fa.json                |   1 +
- public/locales/fil.json               |   1 +
- public/locales/fr.json                |   1 +
- public/locales/hi.json                |   1 +
- public/locales/hu.json                |   1 +
- public/locales/id.json                |   1 +
- public/locales/it.json                |   1 +
- public/locales/ja.json                |   1 +
- public/locales/ko.json                |   1 +
- public/locales/nb.json                |   1 +
- public/locales/nl.json                |   1 +
- public/locales/pl.json                |   1 +
- public/locales/pt-BR.json             |   1 +
- public/locales/pt.json                |   1 +
- public/locales/ru.json                |   1 +
- public/locales/sv.json                |   1 +
- public/locales/tr.json                |   1 +
- public/locales/uk.json                |   1 +
- public/locales/vi.json                |   1 +
- public/locales/zh-Hant.json           |   1 +
- public/locales/zh.json                |   1 +
- public/pages/login.js                 |  49 +++++-
- server/auth.js                        |  88 +++++++--
- server/services/homeassistant-auth.js | 245 ++++++++++++++++++++++++++
- server/services/oidc.js               |  28 ++-
- 31 files changed, 418 insertions(+), 19 deletions(-)
- create mode 100644 server/services/homeassistant-auth.js
+Runtime part of https://github.com/ulsklyc/yuvomi/pull/2428 (both commits:
+feat(auth): sign in with Home Assistant + fix(auth): ... after review),
+rebased onto v2.83.0. Drop this patch once the PR is released.
 
 diff --git a/public/locales/ar.json b/public/locales/ar.json
-index 6dcfcff..33127ca 100644
+index edf1f91d7..384dd794d 100644
 --- a/public/locales/ar.json
 +++ b/public/locales/ar.json
-@@ -3804,6 +3804,7 @@
+@@ -3601,6 +3601,8 @@
+         "memberSsoOnlyLabel": "تسجيل الدخول بـ SSO فقط",
+         "memberSsoOnlyHint": "لن يحصل الحساب على كلمة مرور. لا يمكن للعضو تسجيل الدخول إلا عبر SSO.",
+         "memberSsoOnlyEditHint": "عند تفعيل هذا الخيار يفقد الحساب كلمة مروره ولا يدخل إلا عبر SSO. لإيقافه يجب تعيين كلمة مرور جديدة.",
++        "memberHomeAssistantUserIdLabel": "معرّف مستخدم Home Assistant",
++        "memberHomeAssistantUserIdHint": "يربط هذا الحساب بمستخدم في Home Assistant حتى يعثر عليه تسجيل الدخول عبر Home Assistant. تجد المعرّف في Home Assistant ضمن الإعدادات > الأشخاص > المستخدمون (الوضع المتقدم). اتركه فارغًا لإزالة الربط.",
+         "healthPreventionNotifyCaregiversLabel": "إشعار مقدمي الرعاية",
+         "healthPreventionNotifyCaregiversHint": "يرى مقدم الرعاية بالفعل ما هو مستحق عند فتح التطبيق. يؤدي تفعيل هذا الخيار أيضًا إلى إرسال إشعار فوري يذكر اسمك - معطّل افتراضيًا، لأن إذن الرعاية وحده لا يعني إشعارًا.",
+         "healthPreventionNotifyCaregiversSaved": "تم حفظ إعداد الإشعارات.",
+@@ -3803,6 +3805,7 @@
          "hidePassword": "إخفاء كلمة المرور",
          "version": "v{{version}}",
          "loginWithSso": "تسجيل الدخول بـ SSO",
@@ -63,10 +26,19 @@ index 6dcfcff..33127ca 100644
          "ssoError": "فشل تسجيل الدخول بـ SSO. يرجى المحاولة مرة أخرى.",
          "ssoNoAccount": "لا يوجد حساب هنا بعد لتسجيل الدخول بـ SSO هذا. يرجى التواصل مع مسؤول منزلك.",
 diff --git a/public/locales/cs.json b/public/locales/cs.json
-index ba813ab..348c407 100644
+index 8108dd5f1..892c0324e 100644
 --- a/public/locales/cs.json
 +++ b/public/locales/cs.json
-@@ -3582,6 +3582,7 @@
+@@ -3389,6 +3389,8 @@
+         "memberSsoOnlyLabel": "Pouze přihlášení přes SSO",
+         "memberSsoOnlyHint": "Účet nedostane žádné heslo. Člen se může přihlásit pouze přes SSO.",
+         "memberSsoOnlyEditHint": "Je-li přepínač zapnutý, účet ztratí své heslo a dostane se dovnitř jen přes SSO. K vypnutí je nutné nastavit nové heslo.",
++        "memberHomeAssistantUserIdLabel": "ID uživatele Home Assistant",
++        "memberHomeAssistantUserIdHint": "Propojí tento účet s uživatelem Home Assistant, aby ho přihlášení přes Home Assistant našlo. ID najdete v Home Assistant v Nastavení > Lidé > Uživatelé (rozšířený režim). Ponechte prázdné pro zrušení propojení.",
+         "healthPreventionNotifyCaregiversLabel": "Upozornit pečovatele",
+         "healthPreventionNotifyCaregiversHint": "Pečovatel už při otevření aplikace vidí, co je splatné. Tímto mu navíc pošlete push upozornění s vaším jménem - ve výchozím stavu vypnuto, protože oprávnění k péči samo o sobě upozornění neznamená.",
+         "healthPreventionNotifyCaregiversSaved": "Nastavení upozornění uloženo.",
+@@ -3581,6 +3583,7 @@
          "hidePassword": "Skrýt heslo",
          "version": "v{{version}}",
          "loginWithSso": "Přihlásit se přes SSO",
@@ -75,10 +47,19 @@ index ba813ab..348c407 100644
          "ssoError": "Přihlášení přes SSO selhalo. Zkuste to prosím znovu.",
          "ssoNoAccount": "Pro toto přihlášení přes SSO zde zatím není žádný účet. Obraťte se na správce vaší domácnosti.",
 diff --git a/public/locales/de.json b/public/locales/de.json
-index 74ca81d..037bd18 100644
+index 310bcc3ec..5639ff378 100644
 --- a/public/locales/de.json
 +++ b/public/locales/de.json
-@@ -3482,6 +3482,7 @@
+@@ -3297,6 +3297,8 @@
+         "memberSsoOnlyLabel": "Nur SSO-Anmeldung",
+         "memberSsoOnlyHint": "Das Konto bekommt kein Passwort. Anmelden kann sich das Mitglied nur über SSO.",
+         "memberSsoOnlyEditHint": "Ist der Schalter an, verliert das Konto sein Passwort und kommt nur noch über SSO herein. Zum Ausschalten muss ein neues Passwort gesetzt werden.",
++        "memberHomeAssistantUserIdLabel": "Home-Assistant-Benutzer-ID",
++        "memberHomeAssistantUserIdHint": "Bindet dieses Konto an einen Home-Assistant-Benutzer, damit die Anmeldung mit Home Assistant es findet. Die ID steht in Home Assistant unter Einstellungen > Personen > Benutzer (erweiterter Modus). Leer lassen, um die Bindung zu entfernen.",
+         "healthPreventionNotifyCaregiversLabel": "Betreuende Personen benachrichtigen",
+         "healthPreventionNotifyCaregiversHint": "Eine betreuende Person sieht bereits beim Öffnen der App, was fällig ist. Diese Einstellung schickt ihr zusätzlich eine Push-Benachrichtigung mit deinem Namen - standardmäßig aus, denn die Betreuungs-Zusage allein bedeutet noch keine Benachrichtigung.",
+         "healthPreventionNotifyCaregiversSaved": "Benachrichtigungs-Einstellung gespeichert.",
+@@ -3481,6 +3483,7 @@
          "hidePassword": "Passwort verbergen",
          "version": "v{{version}}",
          "loginWithSso": "Mit SSO anmelden",
@@ -87,10 +68,19 @@ index 74ca81d..037bd18 100644
          "ssoError": "SSO-Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
          "ssoNoAccount": "Für diese SSO-Anmeldung gibt es hier noch kein Konto. Wende dich an die Administration deines Haushalts.",
 diff --git a/public/locales/el.json b/public/locales/el.json
-index fd1513f..d07b5f1 100644
+index f42b9c5df..99b0ed5e7 100644
 --- a/public/locales/el.json
 +++ b/public/locales/el.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Μόνο σύνδεση με SSO",
+         "memberSsoOnlyHint": "Ο λογαριασμός δεν αποκτά κωδικό. Το μέλος μπορεί να συνδεθεί μόνο μέσω SSO.",
+         "memberSsoOnlyEditHint": "Με τον διακόπτη ενεργό, ο λογαριασμός χάνει τον κωδικό του και μπαίνει μόνο μέσω SSO. Για την απενεργοποίηση πρέπει να οριστεί νέος κωδικός.",
++        "memberHomeAssistantUserIdLabel": "Αναγνωριστικό χρήστη Home Assistant",
++        "memberHomeAssistantUserIdHint": "Συνδέει αυτόν τον λογαριασμό με έναν χρήστη του Home Assistant, ώστε η σύνδεση μέσω Home Assistant να τον βρίσκει. Το αναγνωριστικό βρίσκεται στο Home Assistant στις Ρυθμίσεις > Άτομα > Χρήστες (προηγμένη λειτουργία). Αφήστε το κενό για να καταργήσετε τη σύνδεση.",
+         "healthPreventionNotifyCaregiversLabel": "Ειδοποίηση φροντιστών",
+         "healthPreventionNotifyCaregiversHint": "Ο φροντιστής βλέπει ήδη τι εκκρεμεί όταν ανοίγει την εφαρμογή. Αυτή η ρύθμιση στέλνει επιπλέον μια ειδοποίηση push με το όνομά σας - απενεργοποιημένη από προεπιλογή, αφού η άδεια φροντίδας από μόνη της δεν σημαίνει ειδοποίηση.",
+         "healthPreventionNotifyCaregiversSaved": "Η ρύθμιση ειδοποιήσεων αποθηκεύτηκε.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Απόκρυψη κωδικού",
          "version": "v{{version}}",
          "loginWithSso": "Σύνδεση με SSO",
@@ -99,10 +89,19 @@ index fd1513f..d07b5f1 100644
          "ssoError": "Η σύνδεση SSO απέτυχε. Παρακαλώ δοκιμάστε ξανά.",
          "ssoNoAccount": "Δεν υπάρχει ακόμη λογαριασμός εδώ για αυτή τη σύνδεση SSO. Απευθυνθείτε στον διαχειριστή του νοικοκυριού σας.",
 diff --git a/public/locales/en.json b/public/locales/en.json
-index 957888a..b27c2ca 100644
+index 8c1cf9e07..b4b5c655f 100644
 --- a/public/locales/en.json
 +++ b/public/locales/en.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "SSO sign-in only",
+         "memberSsoOnlyHint": "The account gets no password. The member can only sign in through SSO.",
+         "memberSsoOnlyEditHint": "With this on, the account loses its password and only gets in through SSO. Turning it off requires setting a new password.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant user ID",
++        "memberHomeAssistantUserIdHint": "Binds this account to a Home Assistant user, so signing in with Home Assistant finds it. You can find the ID in Home Assistant under Settings > People > Users (advanced mode). Leave empty to remove the binding.",
+         "healthPreventionNotifyCaregiversLabel": "Notify caregivers when something is due",
+         "healthPreventionNotifyCaregiversHint": "A caregiver can already see what's due when they open the app. Turning this on also sends them a push notification naming you - off by default, since caregiving access alone does not mean a notification.",
+         "healthPreventionNotifyCaregiversSaved": "Notification setting saved.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Hide password",
          "version": "v{{version}}",
          "loginWithSso": "Sign in with SSO",
@@ -111,10 +110,19 @@ index 957888a..b27c2ca 100644
          "ssoError": "SSO sign-in failed. Please try again.",
          "ssoNoAccount": "There is no account here yet for this SSO sign-in. Please contact your household's administrator.",
 diff --git a/public/locales/es.json b/public/locales/es.json
-index 58f75a3..ab186cb 100644
+index 6db7212da..aff58a9a1 100644
 --- a/public/locales/es.json
 +++ b/public/locales/es.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Solo inicio de sesión con SSO",
+         "memberSsoOnlyHint": "La cuenta no recibe contraseña. El miembro solo puede iniciar sesión con SSO.",
+         "memberSsoOnlyEditHint": "Con el interruptor activado, la cuenta pierde su contraseña y solo entra mediante SSO. Para desactivarlo hay que establecer una contraseña nueva.",
++        "memberHomeAssistantUserIdLabel": "ID de usuario de Home Assistant",
++        "memberHomeAssistantUserIdHint": "Vincula esta cuenta a un usuario de Home Assistant para que el inicio de sesión con Home Assistant la encuentre. El ID está en Home Assistant en Ajustes > Personas > Usuarios (modo avanzado). Déjalo vacío para quitar el vínculo.",
+         "healthPreventionNotifyCaregiversLabel": "Avisar a mis cuidadores",
+         "healthPreventionNotifyCaregiversHint": "Quien te cuida ya ve lo que está pendiente al abrir la app. Esta opción además le envía una notificación push con tu nombre - desactivada por defecto, ya que el permiso de cuidado por sí solo no implica notificaciones.",
+         "healthPreventionNotifyCaregiversSaved": "Ajuste de notificaciones guardado.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Ocultar contraseña",
          "version": "v{{version}}",
          "loginWithSso": "Iniciar sesión con SSO",
@@ -123,10 +131,19 @@ index 58f75a3..ab186cb 100644
          "ssoError": "Error al iniciar sesión con SSO. Inténtalo de nuevo.",
          "ssoNoAccount": "Todavía no hay ninguna cuenta aquí para este inicio de sesión con SSO. Ponte en contacto con la administración de tu hogar.",
 diff --git a/public/locales/fa.json b/public/locales/fa.json
-index 522130c..2e17c5c 100644
+index ecf641345..294d786fd 100644
 --- a/public/locales/fa.json
 +++ b/public/locales/fa.json
-@@ -3482,6 +3482,7 @@
+@@ -3297,6 +3297,8 @@
+         "memberSsoOnlyLabel": "فقط ورود با SSO",
+         "memberSsoOnlyHint": "این حساب رمز عبوری دریافت نمی‌کند. عضو تنها می‌تواند از طریق SSO وارد شود.",
+         "memberSsoOnlyEditHint": "با روشن بودن این کلید، حساب رمز عبور خود را از دست می‌دهد و فقط از طریق SSO وارد می‌شود. برای خاموش کردن باید رمز عبور جدیدی تعیین شود.",
++        "memberHomeAssistantUserIdLabel": "شناسه کاربر Home Assistant",
++        "memberHomeAssistantUserIdHint": "این حساب را به یک کاربر Home Assistant پیوند می‌دهد تا ورود با Home Assistant آن را پیدا کند. شناسه را در Home Assistant در تنظیمات > افراد > کاربران (حالت پیشرفته) می‌یابید. برای حذف پیوند خالی بگذارید.",
+         "healthPreventionNotifyCaregiversLabel": "اطلاع‌رسانی به مراقبان",
+         "healthPreventionNotifyCaregiversHint": "مراقب شما هنگام باز کردن برنامه از قبل می‌بیند چه چیزی سررسیده است. این گزینه علاوه بر آن یک اعلان فوری با نام شما ارسال می‌کند - به‌طور پیش‌فرض خاموش است، زیرا مجوز مراقبت به‌تنهایی به معنای اعلان نیست.",
+         "healthPreventionNotifyCaregiversSaved": "تنظیم اعلان ذخیره شد.",
+@@ -3481,6 +3483,7 @@
          "hidePassword": "پنهان‌سازی رمز عبور",
          "version": "v{{version}}",
          "loginWithSso": "ورود با SSO",
@@ -135,10 +152,19 @@ index 522130c..2e17c5c 100644
          "ssoError": "ورود با SSO ناموفق بود. لطفاً دوباره تلاش کنید.",
          "ssoNoAccount": "هنوز برای این ورود با SSO حسابی در اینجا وجود ندارد. لطفاً با مدیر خانوار خود تماس بگیرید.",
 diff --git a/public/locales/fil.json b/public/locales/fil.json
-index 2f1a12e..b86d93e 100644
+index cf8e2a0cd..cf80cbec9 100644
 --- a/public/locales/fil.json
 +++ b/public/locales/fil.json
-@@ -3482,6 +3482,7 @@
+@@ -3297,6 +3297,8 @@
+         "memberSsoOnlyLabel": "Pag-sign in sa SSO lamang",
+         "memberSsoOnlyHint": "Walang password na makukuha ang account. Makakapag-sign in lang ang miyembro sa pamamagitan ng SSO.",
+         "memberSsoOnlyEditHint": "Kapag naka-on ito, mawawala ang password ng account at sa SSO na lang ito papasok. Para i-off, kailangang magtakda ng bagong password.",
++        "memberHomeAssistantUserIdLabel": "User ID sa Home Assistant",
++        "memberHomeAssistantUserIdHint": "Ikinakabit ang account na ito sa isang Home Assistant user para mahanap ito ng pag-sign in gamit ang Home Assistant. Makikita ang ID sa Home Assistant sa Settings > People > Users (advanced mode). Iwanang blangko para alisin ang pagkakabit.",
+         "healthPreventionNotifyCaregiversLabel": "Abisuhan ang mga tagapag-alaga",
+         "healthPreventionNotifyCaregiversHint": "Nakikita na ng tagapag-alaga kung ano ang due sa pagbukas ng app. Ang pagbukas nito ay magpapadala rin sa kanila ng push notification na may pangalan mo - naka-off bilang default, dahil ang access ng pag-aalaga lang ay hindi awtomatikong nangangahulugan ng notification.",
+         "healthPreventionNotifyCaregiversSaved": "Na-save ang setting ng notification.",
+@@ -3481,6 +3483,7 @@
          "hidePassword": "Itago ang password",
          "version": "v{{version}}",
          "loginWithSso": "Mag-sign in gamit ang SSO",
@@ -147,10 +173,19 @@ index 2f1a12e..b86d93e 100644
          "ssoError": "Nabigo ang pag-sign in gamit ang SSO. Pakisubukang muli.",
          "ssoNoAccount": "Wala pang account dito para sa pag-sign in na ito gamit ang SSO. Makipag-ugnayan sa administrador ng iyong sambahayan.",
 diff --git a/public/locales/fr.json b/public/locales/fr.json
-index 2ca663e..8759273 100644
+index 944bb2a1f..88351efcc 100644
 --- a/public/locales/fr.json
 +++ b/public/locales/fr.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Connexion SSO uniquement",
+         "memberSsoOnlyHint": "Le compte ne reçoit pas de mot de passe. Le membre ne peut se connecter que via le SSO.",
+         "memberSsoOnlyEditHint": "Lorsque l'option est activée, le compte perd son mot de passe et n'entre plus que via le SSO. Pour la désactiver, il faut définir un nouveau mot de passe.",
++        "memberHomeAssistantUserIdLabel": "ID utilisateur Home Assistant",
++        "memberHomeAssistantUserIdHint": "Associe ce compte à un utilisateur Home Assistant, afin que la connexion avec Home Assistant le retrouve. L'ID se trouve dans Home Assistant sous Paramètres > Personnes > Utilisateurs (mode avancé). Laisser vide pour supprimer l'association.",
+         "healthPreventionNotifyCaregiversLabel": "Prévenir les aidants",
+         "healthPreventionNotifyCaregiversHint": "Un aidant voit déjà ce qui est dû en ouvrant l'appli. Cette option lui envoie en plus une notification push avec votre nom - désactivée par défaut, car l'autorisation d'aide seule n'implique pas de notification.",
+         "healthPreventionNotifyCaregiversSaved": "Paramètre de notification enregistré.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Masquer le mot de passe",
          "version": "v{{version}}",
          "loginWithSso": "Se connecter avec SSO",
@@ -159,10 +194,19 @@ index 2ca663e..8759273 100644
          "ssoError": "La connexion SSO a échoué. Veuillez réessayer.",
          "ssoNoAccount": "Aucun compte n'existe encore ici pour cette connexion SSO. Contactez l'administrateur de votre foyer.",
 diff --git a/public/locales/hi.json b/public/locales/hi.json
-index 8c0b939..573c901 100644
+index deca2554b..bd24412b1 100644
 --- a/public/locales/hi.json
 +++ b/public/locales/hi.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "केवल SSO साइन-इन",
+         "memberSsoOnlyHint": "इस खाते को कोई पासवर्ड नहीं मिलेगा। सदस्य केवल SSO से ही साइन इन कर सकता है।",
+         "memberSsoOnlyEditHint": "स्विच चालू होने पर खाता अपना पासवर्ड खो देता है और केवल SSO से ही अंदर आता है। बंद करने के लिए नया पासवर्ड सेट करना होगा।",
++        "memberHomeAssistantUserIdLabel": "Home Assistant उपयोगकर्ता ID",
++        "memberHomeAssistantUserIdHint": "इस खाते को किसी Home Assistant उपयोगकर्ता से जोड़ता है, ताकि Home Assistant से साइन इन इसे ढूँढ सके। ID Home Assistant में सेटिंग्स > लोग > उपयोगकर्ता (उन्नत मोड) में मिलती है। जुड़ाव हटाने के लिए खाली छोड़ें।",
+         "healthPreventionNotifyCaregiversLabel": "देखभालकर्ताओं को सूचित करें",
+         "healthPreventionNotifyCaregiversHint": "देखभालकर्ता ऐप खोलते ही देख लेता है कि क्या देय है। इसे चालू करने पर उसे आपका नाम बताते हुए पुश सूचना भी भेजी जाएगी - डिफ़ॉल्ट रूप से बंद, क्योंकि देखभाल की अनुमति अपने आप में सूचना नहीं दर्शाती।",
+         "healthPreventionNotifyCaregiversSaved": "सूचना सेटिंग सहेजी गई।",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "पासवर्ड छिपाएं",
          "version": "v{{version}}",
          "loginWithSso": "SSO से साइन इन करें",
@@ -171,10 +215,19 @@ index 8c0b939..573c901 100644
          "ssoError": "SSO साइन-इन विफल रहा। कृपया पुनः प्रयास करें।",
          "ssoNoAccount": "इस SSO साइन-इन के लिए यहाँ अभी कोई खाता नहीं है। कृपया अपने घर के प्रशासक से संपर्क करें।",
 diff --git a/public/locales/hu.json b/public/locales/hu.json
-index 3b5c1ac..cba281e 100644
+index a47dbc26f..945e3cccc 100644
 --- a/public/locales/hu.json
 +++ b/public/locales/hu.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Csak SSO-bejelentkezés",
+         "memberSsoOnlyHint": "A fiók nem kap jelszót. A tag csak SSO-val tud bejelentkezni.",
+         "memberSsoOnlyEditHint": "Bekapcsolt kapcsolóval a fiók elveszíti a jelszavát, és csak SSO-val jut be. A kikapcsoláshoz új jelszót kell megadni.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant felhasználói azonosító",
++        "memberHomeAssistantUserIdHint": "Ezt a fiókot egy Home Assistant-felhasználóhoz köti, így a Home Assistant-bejelentkezés megtalálja. Az azonosító a Home Assistantban a Beállítások > Személyek > Felhasználók alatt látható (haladó mód). Hagyd üresen a kötés megszüntetéséhez.",
+         "healthPreventionNotifyCaregiversLabel": "Gondozók értesítése",
+         "healthPreventionNotifyCaregiversHint": "A gondozó már az alkalmazás megnyitásakor látja, mi esedékes. Ez a beállítás emellett push-értesítést is küld neki a nevével - alapértelmezetten kikapcsolva, mert a gondozási jogosultság önmagában nem jelent értesítést.",
+         "healthPreventionNotifyCaregiversSaved": "Az értesítési beállítás mentve.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Jelszó elrejtése",
          "version": "v{{version}}",
          "loginWithSso": "Bejelentkezés SSO-val",
@@ -183,10 +236,19 @@ index 3b5c1ac..cba281e 100644
          "ssoError": "SSO bejelentkezés sikertelen. Kérjük, próbálja újra.",
          "ssoNoAccount": "Ehhez az SSO bejelentkezéshez itt még nincs fiók. Kérjük, forduljon a háztartás rendszergazdájához.",
 diff --git a/public/locales/id.json b/public/locales/id.json
-index d729ed2..a5616f8 100644
+index 1b3870029..e276197f6 100644
 --- a/public/locales/id.json
 +++ b/public/locales/id.json
-@@ -3482,6 +3482,7 @@
+@@ -3297,6 +3297,8 @@
+         "memberSsoOnlyLabel": "Hanya masuk dengan SSO",
+         "memberSsoOnlyHint": "Akun tidak mendapatkan kata sandi. Anggota hanya dapat masuk melalui SSO.",
+         "memberSsoOnlyEditHint": "Jika sakelar aktif, akun kehilangan kata sandinya dan hanya masuk melalui SSO. Untuk mematikannya, kata sandi baru harus ditetapkan.",
++        "memberHomeAssistantUserIdLabel": "ID pengguna Home Assistant",
++        "memberHomeAssistantUserIdHint": "Menautkan akun ini ke pengguna Home Assistant agar masuk dengan Home Assistant dapat menemukannya. ID ada di Home Assistant pada Pengaturan > Orang > Pengguna (mode lanjutan). Kosongkan untuk menghapus tautan.",
+         "healthPreventionNotifyCaregiversLabel": "Beri tahu pengasuh",
+         "healthPreventionNotifyCaregiversHint": "Pengasuh sudah bisa melihat apa yang jatuh tempo saat membuka aplikasi. Mengaktifkan ini juga mengirim notifikasi push dengan nama Anda - nonaktif secara default, karena akses pengasuhan saja tidak berarti notifikasi.",
+         "healthPreventionNotifyCaregiversSaved": "Pengaturan notifikasi disimpan.",
+@@ -3481,6 +3483,7 @@
          "hidePassword": "Sembunyikan kata sandi",
          "version": "v{{version}}",
          "loginWithSso": "Masuk dengan SSO",
@@ -195,10 +257,19 @@ index d729ed2..a5616f8 100644
          "ssoError": "Masuk SSO gagal. Silakan coba lagi.",
          "ssoNoAccount": "Belum ada akun di sini untuk masuk SSO ini. Silakan hubungi administrator rumah tangga Anda.",
 diff --git a/public/locales/it.json b/public/locales/it.json
-index 91d8052..9c94ce9 100644
+index 7129ea155..bcee45364 100644
 --- a/public/locales/it.json
 +++ b/public/locales/it.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Solo accesso con SSO",
+         "memberSsoOnlyHint": "L'account non riceve alcuna password. Il membro può accedere solo tramite SSO.",
+         "memberSsoOnlyEditHint": "Con l'interruttore attivo l'account perde la sua password ed entra solo tramite SSO. Per disattivarlo occorre impostare una nuova password.",
++        "memberHomeAssistantUserIdLabel": "ID utente Home Assistant",
++        "memberHomeAssistantUserIdHint": "Collega questo account a un utente di Home Assistant, così l'accesso con Home Assistant lo trova. L'ID si trova in Home Assistant in Impostazioni > Persone > Utenti (modalità avanzata). Lascia vuoto per rimuovere il collegamento.",
+         "healthPreventionNotifyCaregiversLabel": "Avvisa chi si prende cura di me",
+         "healthPreventionNotifyCaregiversHint": "Chi si prende cura di te vede già cosa è in scadenza aprendo l'app. Questa opzione gli invia anche una notifica push con il tuo nome - disattivata per impostazione predefinita, perché l'autorizzazione di assistenza da sola non implica una notifica.",
+         "healthPreventionNotifyCaregiversSaved": "Impostazione delle notifiche salvata.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Nascondi password",
          "version": "v{{version}}",
          "loginWithSso": "Accedi con SSO",
@@ -207,10 +278,19 @@ index 91d8052..9c94ce9 100644
          "ssoError": "Accesso SSO non riuscito. Riprova.",
          "ssoNoAccount": "Non esiste ancora un account qui per questo accesso SSO. Contatta l'amministratore della tua famiglia.",
 diff --git a/public/locales/ja.json b/public/locales/ja.json
-index 40ca4ca..f4fe8c7 100644
+index 7b064431a..b5a60cb27 100644
 --- a/public/locales/ja.json
 +++ b/public/locales/ja.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "SSO サインインのみ",
+         "memberSsoOnlyHint": "このアカウントにはパスワードが設定されません。メンバーは SSO でのみサインインできます。",
+         "memberSsoOnlyEditHint": "オンにするとアカウントはパスワードを失い、SSO でのみ入れるようになります。オフにするには新しいパスワードの設定が必要です。",
++        "memberHomeAssistantUserIdLabel": "Home Assistant ユーザー ID",
++        "memberHomeAssistantUserIdHint": "このアカウントを Home Assistant のユーザーに紐付け、Home Assistant でのサインイン時に見つかるようにします。ID は Home Assistant の 設定 > ユーザーと人 > ユーザー（詳細モード）で確認できます。空欄にすると紐付けを解除します。",
+         "healthPreventionNotifyCaregiversLabel": "介護者に通知する",
+         "healthPreventionNotifyCaregiversHint": "介護者はアプリを開けばすでに期限が来ている項目を確認できます。この設定をオンにすると、あなたの名前を含むプッシュ通知も送信されます - ケア権限があるだけでは通知は行われないため、デフォルトはオフです。",
+         "healthPreventionNotifyCaregiversSaved": "通知設定を保存しました。",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "パスワードを非表示",
          "version": "v{{version}}",
          "loginWithSso": "SSOでサインイン",
@@ -219,10 +299,19 @@ index 40ca4ca..f4fe8c7 100644
          "ssoError": "SSOサインインに失敗しました。もう一度お試しください。",
          "ssoNoAccount": "このSSOサインインに対応するアカウントはまだ存在しません。世帯の管理者にお問い合わせください。",
 diff --git a/public/locales/ko.json b/public/locales/ko.json
-index 7133704..42fc8c3 100644
+index 6dfd4a34f..786b23b18 100644
 --- a/public/locales/ko.json
 +++ b/public/locales/ko.json
-@@ -3482,6 +3482,7 @@
+@@ -3297,6 +3297,8 @@
+         "memberSsoOnlyLabel": "SSO 로그인만 허용",
+         "memberSsoOnlyHint": "이 계정에는 비밀번호가 없습니다. 구성원은 SSO로만 로그인할 수 있습니다.",
+         "memberSsoOnlyEditHint": "켜면 계정은 비밀번호를 잃고 SSO로만 들어옵니다. 끄려면 새 비밀번호를 설정해야 합니다.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant 사용자 ID",
++        "memberHomeAssistantUserIdHint": "이 계정을 Home Assistant 사용자와 연결하여 Home Assistant로 로그인할 때 찾을 수 있게 합니다. ID는 Home Assistant의 설정 > 사람 > 사용자(고급 모드)에서 확인할 수 있습니다. 연결을 해제하려면 비워 두세요.",
+         "healthPreventionNotifyCaregiversLabel": "돌봄 제공자에게 알리기",
+         "healthPreventionNotifyCaregiversHint": "돌봄 제공자는 앱을 열면 이미 기한이 된 항목을 볼 수 있습니다. 이 설정을 켜면 회원님의 이름이 포함된 푸시 알림도 함께 전송됩니다 - 돌봄 권한만으로는 알림이 발송되지 않으므로 기본값은 꺼짐입니다.",
+         "healthPreventionNotifyCaregiversSaved": "알림 설정이 저장되었습니다.",
+@@ -3481,6 +3483,7 @@
          "hidePassword": "비밀번호 숨기기",
          "version": "v{{version}}",
          "loginWithSso": "SSO로 로그인",
@@ -231,10 +320,19 @@ index 7133704..42fc8c3 100644
          "ssoError": "SSO 로그인에 실패했습니다. 다시 시도해 주세요.",
          "ssoNoAccount": "이 SSO 로그인에 해당하는 계정이 아직 없습니다. 가정의 관리자에게 문의해 주세요.",
 diff --git a/public/locales/nb.json b/public/locales/nb.json
-index cd317ee..cbf85f0 100644
+index 2fa7d8481..96a69f7fb 100644
 --- a/public/locales/nb.json
 +++ b/public/locales/nb.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Kun SSO-innlogging",
+         "memberSsoOnlyHint": "Kontoen får ikke et passord. Medlemmet kan bare logge inn via SSO.",
+         "memberSsoOnlyEditHint": "Når denne er på, mister kontoen passordet sitt og får kun tilgang via SSO. Å slå den av krever at et nytt passord settes.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant-bruker-ID",
++        "memberHomeAssistantUserIdHint": "Knytter kontoen til en Home Assistant-bruker, slik at innlogging med Home Assistant finner den. ID-en finner du i Home Assistant under Innstillinger > Personer > Brukere (avansert modus). La feltet stå tomt for å fjerne koblingen.",
+         "healthPreventionNotifyCaregiversLabel": "Varsle omsorgspersoner når noe forfaller",
+         "healthPreventionNotifyCaregiversHint": "En omsorgsperson kan allerede se hva som forfaller når de åpner appen. Ved å slå denne på, vil de også få et push-varsel med navnet ditt - av som standard, siden omsorgstilgang alene ikke betyr et varsel.",
+         "healthPreventionNotifyCaregiversSaved": "Varslingsinnstilling lagret.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Skjul passord",
          "version": "v{{version}}",
          "loginWithSso": "Logg inn med SSO",
@@ -243,10 +341,19 @@ index cd317ee..cbf85f0 100644
          "ssoError": "SSO-innlogging mislyktes. Vennligst prøv igjen.",
          "ssoNoAccount": "Det finnes ingen konto her ennå for denne SSO-innloggingen. Vennligst kontakt administratoren for husholdningen din.",
 diff --git a/public/locales/nl.json b/public/locales/nl.json
-index 6dbeeab..402fe52 100644
+index f34d26bac..96760a479 100644
 --- a/public/locales/nl.json
 +++ b/public/locales/nl.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Alleen SSO-aanmelding",
+         "memberSsoOnlyHint": "Het account krijgt geen wachtwoord. Het lid kan zich alleen via SSO aanmelden.",
+         "memberSsoOnlyEditHint": "Staat de schakelaar aan, dan verliest het account zijn wachtwoord en komt het alleen nog via SSO binnen. Uitschakelen vereist een nieuw wachtwoord.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant-gebruikers-ID",
++        "memberHomeAssistantUserIdHint": "Koppelt dit account aan een Home Assistant-gebruiker, zodat inloggen met Home Assistant het vindt. De ID staat in Home Assistant onder Instellingen > Personen > Gebruikers (geavanceerde modus). Laat leeg om de koppeling te verwijderen.",
+         "healthPreventionNotifyCaregiversLabel": "Verzorgers op de hoogte stellen",
+         "healthPreventionNotifyCaregiversHint": "Een verzorger ziet al wat er verschuldigd is zodra de app wordt geopend. Deze instelling stuurt daarnaast een pushmelding met jouw naam - standaard uit, want zorgtoegang alleen betekent nog geen melding.",
+         "healthPreventionNotifyCaregiversSaved": "Meldingsinstelling opgeslagen.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Wachtwoord verbergen",
          "version": "v{{version}}",
          "loginWithSso": "Aanmelden met SSO",
@@ -255,10 +362,19 @@ index 6dbeeab..402fe52 100644
          "ssoError": "SSO-aanmelding mislukt. Probeer het opnieuw.",
          "ssoNoAccount": "Er is hier nog geen account voor deze SSO-aanmelding. Neem contact op met de beheerder van je huishouden.",
 diff --git a/public/locales/pl.json b/public/locales/pl.json
-index 4b04cf7..a3784a2 100644
+index 7fa1f702c..425aa4e25 100644
 --- a/public/locales/pl.json
 +++ b/public/locales/pl.json
-@@ -3708,6 +3708,7 @@
+@@ -3511,6 +3511,8 @@
+         "memberSsoOnlyLabel": "Tylko logowanie przez SSO",
+         "memberSsoOnlyHint": "Konto nie otrzyma hasła. Członek może zalogować się wyłącznie przez SSO.",
+         "memberSsoOnlyEditHint": "Przy włączonym przełączniku konto traci hasło i wchodzi już tylko przez SSO. Aby go wyłączyć, trzeba ustawić nowe hasło.",
++        "memberHomeAssistantUserIdLabel": "ID użytkownika Home Assistant",
++        "memberHomeAssistantUserIdHint": "Wiąże to konto z użytkownikiem Home Assistant, aby logowanie przez Home Assistant je odnalazło. ID znajdziesz w Home Assistant w Ustawienia > Osoby > Użytkownicy (tryb zaawansowany). Pozostaw puste, aby usunąć powiązanie.",
+         "healthPreventionNotifyCaregiversLabel": "Powiadamiaj opiekunów",
+         "healthPreventionNotifyCaregiversHint": "Opiekun widzi już, co jest wymagane, otwierając aplikację. To ustawienie dodatkowo wysyła mu powiadomienie push z Twoim imieniem - domyślnie wyłączone, ponieważ samo uprawnienie opieki nie oznacza powiadomienia.",
+         "healthPreventionNotifyCaregiversSaved": "Zapisano ustawienie powiadomień.",
+@@ -3707,6 +3709,7 @@
          "hidePassword": "Ukryj hasło",
          "version": "v{{version}}",
          "loginWithSso": "Zaloguj się przez SSO",
@@ -267,10 +383,19 @@ index 4b04cf7..a3784a2 100644
          "ssoError": "Logowanie SSO nie powiodło się. Spróbuj ponownie.",
          "ssoNoAccount": "Dla tego logowania SSO nie ma tu jeszcze konta. Skontaktuj się z administratorem swojego gospodarstwa domowego.",
 diff --git a/public/locales/pt-BR.json b/public/locales/pt-BR.json
-index b1f00ef..319aaa8 100644
+index 12140a455..0dd987ad7 100644
 --- a/public/locales/pt-BR.json
 +++ b/public/locales/pt-BR.json
-@@ -3464,6 +3464,7 @@
+@@ -3278,6 +3278,8 @@
+         "memberSsoOnlyLabel": "Somente login com SSO",
+         "memberSsoOnlyHint": "A conta não recebe senha. O membro só pode fazer login com SSO.",
+         "memberSsoOnlyEditHint": "Com o interruptor ligado, a conta perde a sua senha e só entra através de SSO. Para desligá-lo é preciso definir uma nova senha.",
++        "memberHomeAssistantUserIdLabel": "ID de usuário do Home Assistant",
++        "memberHomeAssistantUserIdHint": "Vincula esta conta a um usuário do Home Assistant, para que o login com o Home Assistant a encontre. O ID fica no Home Assistant em Configurações > Pessoas > Usuários (modo avançado). Deixe vazio para remover o vínculo.",
+         "healthPreventionNotifyCaregiversLabel": "Avisar meus cuidadores",
+         "healthPreventionNotifyCaregiversHint": "Quem cuida de você já vê o que está pendente ao abrir o app. Esta opção também envia uma notificação push com seu nome - desativada por padrão, já que a permissão de cuidado sozinha não implica notificação.",
+         "healthPreventionNotifyCaregiversSaved": "Configuração de notificação salva.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Ocultar senha",
          "version": "v{{version}}",
          "loginWithSso": "Entrar com SSO",
@@ -279,10 +404,19 @@ index b1f00ef..319aaa8 100644
          "ssoError": "O login SSO falhou. Por favor, tente novamente.",
          "ssoNoAccount": "Ainda não existe uma conta aqui para este login SSO. Contate o administrador do seu grupo familiar.",
 diff --git a/public/locales/pt.json b/public/locales/pt.json
-index b77b089..495dc25 100644
+index bb5d52300..32b0496aa 100644
 --- a/public/locales/pt.json
 +++ b/public/locales/pt.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Apenas início de sessão com SSO",
+         "memberSsoOnlyHint": "A conta não recebe senha. O membro só pode iniciar sessão através de SSO.",
+         "memberSsoOnlyEditHint": "Com o interruptor ligado, a conta perde a sua senha e só entra através de SSO. Para o desligar é preciso definir uma nova senha.",
++        "memberHomeAssistantUserIdLabel": "ID de utilizador do Home Assistant",
++        "memberHomeAssistantUserIdHint": "Associa esta conta a um utilizador do Home Assistant, para que o início de sessão com o Home Assistant a encontre. O ID está no Home Assistant em Definições > Pessoas > Utilizadores (modo avançado). Deixe vazio para remover a associação.",
+         "healthPreventionNotifyCaregiversLabel": "Avisar meus cuidadores",
+         "healthPreventionNotifyCaregiversHint": "Quem cuida de você já vê o que está pendente ao abrir o app. Esta opção também envia uma notificação push com seu nome - desativada por padrão, já que a permissão de cuidado sozinha não implica notificação.",
+         "healthPreventionNotifyCaregiversSaved": "Configuração de notificação salva.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Ocultar senha",
          "version": "v{{version}}",
          "loginWithSso": "Entrar com SSO",
@@ -291,10 +425,19 @@ index b77b089..495dc25 100644
          "ssoError": "O login SSO falhou. Por favor, tente novamente.",
          "ssoNoAccount": "Ainda não existe uma conta aqui para este login SSO. Contacte o administrador do seu agregado familiar.",
 diff --git a/public/locales/ru.json b/public/locales/ru.json
-index 7063c93..dab59a7 100644
+index 75c5fc9ab..e838f50ec 100644
 --- a/public/locales/ru.json
 +++ b/public/locales/ru.json
-@@ -3690,6 +3690,7 @@
+@@ -3493,6 +3493,8 @@
+         "memberSsoOnlyLabel": "Только вход через SSO",
+         "memberSsoOnlyHint": "Учётная запись не получает пароль. Участник может войти только через SSO.",
+         "memberSsoOnlyEditHint": "При включённом переключателе учётная запись теряет свой пароль и входит только через SSO. Чтобы выключить его, нужно задать новый пароль.",
++        "memberHomeAssistantUserIdLabel": "ID пользователя Home Assistant",
++        "memberHomeAssistantUserIdHint": "Привязывает эту учётную запись к пользователю Home Assistant, чтобы вход через Home Assistant её находил. ID указан в Home Assistant в разделе Настройки > Люди > Пользователи (расширенный режим). Оставьте пустым, чтобы удалить привязку.",
+         "healthPreventionNotifyCaregiversLabel": "Уведомлять опекунов",
+         "healthPreventionNotifyCaregiversHint": "Опекун уже видит, что подошёл срок, открыв приложение. Эта настройка дополнительно отправляет ему push-уведомление с вашим именем - по умолчанию выключено, так как право опеки само по себе не означает уведомление.",
+         "healthPreventionNotifyCaregiversSaved": "Настройка уведомлений сохранена.",
+@@ -3689,6 +3691,7 @@
          "hidePassword": "Скрыть пароль",
          "version": "v{{version}}",
          "loginWithSso": "Войти через SSO",
@@ -303,10 +446,19 @@ index 7063c93..dab59a7 100644
          "ssoError": "Вход через SSO не удался. Повторите попытку.",
          "ssoNoAccount": "Для этого входа через SSO здесь ещё нет учётной записи. Обратитесь к администратору вашего домохозяйства.",
 diff --git a/public/locales/sv.json b/public/locales/sv.json
-index d8ca685..5fed792 100644
+index 15d1c9171..728d2a72e 100644
 --- a/public/locales/sv.json
 +++ b/public/locales/sv.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Endast SSO-inloggning",
+         "memberSsoOnlyHint": "Kontot får inget lösenord. Medlemmen kan bara logga in via SSO.",
+         "memberSsoOnlyEditHint": "Med reglaget på förlorar kontot sitt lösenord och kommer bara in via SSO. För att stänga av det måste ett nytt lösenord anges.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant-användar-ID",
++        "memberHomeAssistantUserIdHint": "Kopplar kontot till en Home Assistant-användare så att inloggning med Home Assistant hittar det. ID:t finns i Home Assistant under Inställningar > Personer > Användare (avancerat läge). Lämna tomt för att ta bort kopplingen.",
+         "healthPreventionNotifyCaregiversLabel": "Meddela mina vårdgivare",
+         "healthPreventionNotifyCaregiversHint": "Den som hjälper dig ser redan vad som är dags för när appen öppnas. Den här inställningen skickar dessutom en push-notis med ditt namn - avstängd som standard, eftersom omsorgsbehörighet i sig inte innebär en avisering.",
+         "healthPreventionNotifyCaregiversSaved": "Aviseringsinställning sparad.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Dölj lösenord",
          "version": "v{{version}}",
          "loginWithSso": "Logga in med SSO",
@@ -315,10 +467,19 @@ index d8ca685..5fed792 100644
          "ssoError": "SSO-inloggning misslyckades. Försök igen.",
          "ssoNoAccount": "Det finns ännu inget konto här för den här SSO-inloggningen. Kontakta administratören för ditt hushåll.",
 diff --git a/public/locales/tr.json b/public/locales/tr.json
-index a7ab75d..410ed73 100644
+index 1d7ffa6c9..5c2f4bcab 100644
 --- a/public/locales/tr.json
 +++ b/public/locales/tr.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Yalnızca SSO ile giriş",
+         "memberSsoOnlyHint": "Hesap şifre almaz. Üye yalnızca SSO ile giriş yapabilir.",
+         "memberSsoOnlyEditHint": "Anahtar açıkken hesap şifresini kaybeder ve yalnızca SSO ile girer. Kapatmak için yeni bir şifre belirlenmelidir.",
++        "memberHomeAssistantUserIdLabel": "Home Assistant kullanıcı kimliği",
++        "memberHomeAssistantUserIdHint": "Bu hesabı bir Home Assistant kullanıcısına bağlar, böylece Home Assistant ile giriş onu bulur. Kimliği Home Assistant'ta Ayarlar > Kişiler > Kullanıcılar altında bulabilirsiniz (gelişmiş mod). Bağlantıyı kaldırmak için boş bırakın.",
+         "healthPreventionNotifyCaregiversLabel": "Bakım verenleri bilgilendir",
+         "healthPreventionNotifyCaregiversHint": "Bakım veren kişi uygulamayı açtığında zaten neyin süresi geldiğini görür. Bu ayar ayrıca adınızı belirten bir push bildirimi de gönderir - bakım izni tek başına bildirim anlamına gelmediği için varsayılan olarak kapalıdır.",
+         "healthPreventionNotifyCaregiversSaved": "Bildirim ayarı kaydedildi.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Şifreyi gizle",
          "version": "v{{version}}",
          "loginWithSso": "SSO ile giriş yap",
@@ -327,10 +488,19 @@ index a7ab75d..410ed73 100644
          "ssoError": "SSO girişi başarısız oldu. Lütfen tekrar deneyin.",
          "ssoNoAccount": "Bu SSO girişi için burada henüz bir hesap yok. Lütfen hane yöneticinizle iletişime geçin.",
 diff --git a/public/locales/uk.json b/public/locales/uk.json
-index 14a226d..f3e75f2 100644
+index d0450f09a..4cd2394c3 100644
 --- a/public/locales/uk.json
 +++ b/public/locales/uk.json
-@@ -3690,6 +3690,7 @@
+@@ -3493,6 +3493,8 @@
+         "memberSsoOnlyLabel": "Лише вхід через SSO",
+         "memberSsoOnlyHint": "Обліковий запис не отримує пароля. Учасник може увійти лише через SSO.",
+         "memberSsoOnlyEditHint": "З увімкненим перемикачем обліковий запис втрачає свій пароль і заходить лише через SSO. Щоб вимкнути його, потрібно задати новий пароль.",
++        "memberHomeAssistantUserIdLabel": "ID користувача Home Assistant",
++        "memberHomeAssistantUserIdHint": "Прив'язує цей обліковий запис до користувача Home Assistant, щоб вхід через Home Assistant його знаходив. ID є в Home Assistant у розділі Налаштування > Люди > Користувачі (розширений режим). Залиште порожнім, щоб видалити прив'язку.",
+         "healthPreventionNotifyCaregiversLabel": "Сповіщати опікунів",
+         "healthPreventionNotifyCaregiversHint": "Опікун вже бачить, що настав термін, відкривши застосунок. Це налаштування додатково надсилає йому push-сповіщення з вашим ім'ям - за замовчуванням вимкнено, оскільки саме право опіки не означає сповіщення.",
+         "healthPreventionNotifyCaregiversSaved": "Налаштування сповіщень збережено.",
+@@ -3689,6 +3691,7 @@
          "hidePassword": "Приховати пароль",
          "version": "v{{version}}",
          "loginWithSso": "Увійти через SSO",
@@ -339,10 +509,19 @@ index 14a226d..f3e75f2 100644
          "ssoError": "Вхід через SSO не вдався. Спробуйте ще раз.",
          "ssoNoAccount": "Для цього входу через SSO тут ще немає облікового запису. Зверніться до адміністратора вашого домогосподарства.",
 diff --git a/public/locales/vi.json b/public/locales/vi.json
-index fe8f9c0..cbe2e97 100644
+index 18c971d41..d2050acea 100644
 --- a/public/locales/vi.json
 +++ b/public/locales/vi.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "Chỉ đăng nhập bằng SSO",
+         "memberSsoOnlyHint": "Tài khoản không nhận mật khẩu. Thành viên chỉ có thể đăng nhập qua SSO.",
+         "memberSsoOnlyEditHint": "Khi bật, tài khoản mất mật khẩu và chỉ vào được qua SSO. Để tắt, cần đặt một mật khẩu mới.",
++        "memberHomeAssistantUserIdLabel": "ID người dùng Home Assistant",
++        "memberHomeAssistantUserIdHint": "Gắn tài khoản này với một người dùng Home Assistant để đăng nhập bằng Home Assistant tìm thấy nó. ID nằm trong Home Assistant tại Cài đặt > Mọi người > Người dùng (chế độ nâng cao). Để trống để gỡ liên kết.",
+         "healthPreventionNotifyCaregiversLabel": "Thông báo cho người chăm sóc",
+         "healthPreventionNotifyCaregiversHint": "Người chăm sóc đã có thể thấy mục nào đến hạn khi mở ứng dụng. Bật tùy chọn này sẽ gửi thêm thông báo đẩy có tên của bạn - mặc định tắt, vì quyền chăm sóc không tự động nghĩa là có thông báo.",
+         "healthPreventionNotifyCaregiversSaved": "Đã lưu cài đặt thông báo.",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "Ẩn mật khẩu",
          "version": "v{{version}}",
          "loginWithSso": "Đăng nhập với SSO",
@@ -351,10 +530,19 @@ index fe8f9c0..cbe2e97 100644
          "ssoError": "Đăng nhập SSO thất bại. Vui lòng thử lại.",
          "ssoNoAccount": "Chưa có tài khoản nào ở đây cho lần đăng nhập SSO này. Vui lòng liên hệ quản trị viên hộ gia đình của bạn.",
 diff --git a/public/locales/zh-Hant.json b/public/locales/zh-Hant.json
-index faa10bd..0e53911 100644
+index 782353072..86eb21829 100644
 --- a/public/locales/zh-Hant.json
 +++ b/public/locales/zh-Hant.json
-@@ -3464,6 +3464,7 @@
+@@ -3283,6 +3283,8 @@
+         "memberSsoOnlyLabel": "僅透過 SSO 登入",
+         "memberSsoOnlyHint": "該帳戶不會設定密碼，成員只能透過 SSO 登入。",
+         "memberSsoOnlyEditHint": "開關開啟時，帳戶將失去密碼，只能透過 SSO 進入。關閉時必須設定新密碼。",
++        "memberHomeAssistantUserIdLabel": "Home Assistant 使用者 ID",
++        "memberHomeAssistantUserIdHint": "將此帳號綁定到一位 Home Assistant 使用者，讓透過 Home Assistant 登入時能找到它。ID 可在 Home Assistant 的 設定 > 人員 > 使用者（進階模式）中找到。留空即可解除綁定。",
+         "healthPreventionNotifyCaregiversLabel": "通知我的照護者",
+         "healthPreventionNotifyCaregiversHint": "照護者開啟應用程式後已經可以看到到期項目。開啟此設定還會向其發送包含您姓名的推播通知 - 預設關閉，因為僅有照護權限並不代表會收到通知。",
+         "healthPreventionNotifyCaregiversSaved": "通知設定已儲存。",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "隱藏密碼",
          "version": "v{{version}}",
          "loginWithSso": "透過SSO登入",
@@ -363,10 +551,19 @@ index faa10bd..0e53911 100644
          "ssoError": "SSO登入失敗，請重試。",
          "ssoNoAccount": "此SSO登入尚無對應帳戶，請聯絡您家庭的管理員。",
 diff --git a/public/locales/zh.json b/public/locales/zh.json
-index 0e0e7bd..20448b4 100644
+index b4495618a..00e2a2af2 100644
 --- a/public/locales/zh.json
 +++ b/public/locales/zh.json
-@@ -3464,6 +3464,7 @@
+@@ -3279,6 +3279,8 @@
+         "memberSsoOnlyLabel": "仅通过 SSO 登录",
+         "memberSsoOnlyHint": "该账户不会设置密码，成员只能通过 SSO 登录。",
+         "memberSsoOnlyEditHint": "开关打开时，账户将失去密码，只能通过 SSO 进入。关闭时必须设置新密码。",
++        "memberHomeAssistantUserIdLabel": "Home Assistant 用户 ID",
++        "memberHomeAssistantUserIdHint": "将此帐户绑定到一个 Home Assistant 用户，使通过 Home Assistant 登录时能找到它。ID 可在 Home Assistant 的 设置 > 人员 > 用户（高级模式）中找到。留空即可解除绑定。",
+         "healthPreventionNotifyCaregiversLabel": "通知我的照护者",
+         "healthPreventionNotifyCaregiversHint": "照护者打开应用后已经可以看到到期项目。开启此设置还会向其发送包含您姓名的推送通知 - 默认关闭,因为仅有照护权限并不意味着会收到通知。",
+         "healthPreventionNotifyCaregiversSaved": "通知设置已保存。",
+@@ -3463,6 +3465,7 @@
          "hidePassword": "隐藏密码",
          "version": "v{{version}}",
          "loginWithSso": "通过SSO登录",
@@ -375,7 +572,7 @@ index 0e0e7bd..20448b4 100644
          "ssoError": "SSO登录失败，请重试。",
          "ssoNoAccount": "此SSO登录尚无对应账户，请联系您家庭的管理员。",
 diff --git a/public/pages/login.js b/public/pages/login.js
-index 490f18e..4d6caff 100644
+index 490f18e8c..4d6caff7f 100644
 --- a/public/pages/login.js
 +++ b/public/pages/login.js
 @@ -37,6 +37,8 @@ export async function render(container) {
@@ -462,11 +659,120 @@ index 490f18e..4d6caff 100644
  function showError(el, message) {
    el.textContent = message;
    el.hidden = false;
+diff --git a/public/settings/pages/admin-family.js b/public/settings/pages/admin-family.js
+index 11cb88b9c..7ac9ed73d 100644
+--- a/public/settings/pages/admin-family.js
++++ b/public/settings/pages/admin-family.js
+@@ -41,6 +41,26 @@ const randomAvatarColor = () => USER_COLORS[Math.floor(Math.random() * USER_COLO
+  * und keine Angabe zu einem einzelnen Mitglied.
+  */
+ let ssoAvailable = false;
++/**
++ * Ob Home Assistant die SSO-Quelle ist. Dann bekommt jedes Konto ein Feld fuer
++ * die HA-Benutzer-ID: HA liefert keine E-Mail-Adresse, also ist die Bindung
++ * durch den Administrator der einzige Weg, ein Konto ohne Passwort zu fuehren.
++ */
++let homeAssistantSso = false;
++
++/**
++ * Formularzeile fuer die Home-Assistant-Benutzer-ID. Leer, wenn HA nicht die
++ * SSO-Quelle ist.
++ */
++function homeAssistantUserIdRowHtml(id, value = '') {
++  if (!homeAssistantSso) return '';
++  return formRowHtml({
++    label: t('settings.memberHomeAssistantUserIdLabel'), labelFor: id, field: true,
++    description: t('settings.memberHomeAssistantUserIdHint'), descriptionId: `${id}-hint`,
++    control: `<input class="form-input" type="text" id="${id}" value="${esc(value || '')}" `
++      + `pattern="[0-9a-fA-F]{32}" maxlength="32" autocomplete="off" spellcheck="false" aria-describedby="${id}-hint" />`,
++  });
++}
+ 
+ /**
+  * Rechte-Katalog fuer die Startrechte einer Einladung (#869).
+@@ -299,6 +319,7 @@ function addMemberFormHtml() {
+             ssoAvailable ? switchRowHtml({
+               id: 'new-member-sso-only', label: t('settings.memberSsoOnlyLabel'), hint: t('settings.memberSsoOnlyHint'),
+             }) : '',
++            homeAssistantUserIdRowHtml('new-member-ha-user-id'),
+             formRowHtml({
+               label: t('settings.memberPasswordLabel'), labelFor: 'new-member-password', labelExtra: REQUIRED_MARK, field: true,
+               attrs: { id: 'new-member-password-group' },
+@@ -1095,6 +1116,7 @@ async function openEditMemberModal(member, currentUser, users, container) {
+             id: 'edit-member-sso-only', label: t('settings.memberSsoOnlyLabel'),
+             hint: t('settings.memberSsoOnlyEditHint'), checked: member.sso_only === true,
+           }) : '',
++          homeAssistantUserIdRowHtml('edit-member-ha-user-id', member.homeassistant_user_id),
+           formRowHtml({
+             label: t('settings.resetPasswordLabel'), labelFor: 'edit-member-password', field: true,
+             attrs: { id: 'edit-member-password-group' },
+@@ -1209,6 +1231,11 @@ async function openEditMemberModal(member, currentUser, users, container) {
+             birth_year_unknown: birth.yearUnknown,
+             ...(newPassword ? { password: newPassword } : {}),
+             ...(ssoToggle ? { sso_only: ssoToggle.checked } : {}),
++            // Nur ein geaenderter Wert: sonst loeste ein leeres Feld eine
++            // Bindung, die der Server hier gar nicht anzeigt.
++            ...(haUserIdChanged(panel, member) ? {
++              homeassistant_user_id: panel.querySelector('#edit-member-ha-user-id').value.trim() || null,
++            } : {}),
+           });
+           // Betreuung getrennt speichern: sie lebt im Gesundheitsmodul, nicht am
+           // Nutzerdatensatz (#584).
+@@ -1256,8 +1283,16 @@ function syncSsoOnlyField(container) {
+   // Ohne Passwort ist die E-Mail der einzige Weg, auf dem die erste
+   // SSO-Anmeldung dieses Konto findet - ein gleicher Benutzername verknuepft
+   // bewusst nicht. Der Server weist es sonst ab; das hier sagt es vorher.
++  // Ausser der Administrator bindet das Konto gleich an einen HA-Benutzer.
+   const email = container.querySelector('#new-member-email');
+-  if (email) email.required = on;
++  const haUserId = container.querySelector('#new-member-ha-user-id')?.value.trim();
++  if (email) email.required = on && !haUserId;
++}
++
++function haUserIdChanged(panel, member) {
++  const field = panel.querySelector('#edit-member-ha-user-id');
++  if (!field) return false;
++  return field.value.trim().toLowerCase() !== (member.homeassistant_user_id || '');
+ }
+ 
+ function openAddMemberModal(container, currentUser, users) {
+@@ -1270,6 +1305,8 @@ function openAddMemberModal(container, currentUser, users) {
+       const form = panel.querySelector('#add-member-form');
+       form.querySelector('#new-member-sso-only')
+         ?.addEventListener('change', () => syncSsoOnlyField(panel));
++      form.querySelector('#new-member-ha-user-id')
++        ?.addEventListener('input', () => syncSsoOnlyField(panel));
+       syncSsoOnlyField(panel);
+       bindChildStartHint(panel, 'new-family-role', 'new-member-child-hint');
+       panel.querySelector('#cancel-add-member')?.addEventListener('click', () => closeModal());
+@@ -1300,6 +1337,8 @@ function openAddMemberModal(container, currentUser, users) {
+           email: panel.querySelector('#new-member-email')?.value.trim() || null,
+           birth_date: parseDateInput(birthDateRaw) || null,
+         };
++        const haUserId = panel.querySelector('#new-member-ha-user-id')?.value.trim();
++        if (haUserId) data.homeassistant_user_id = haUserId;
+ 
+         const btn = panel.querySelector('[type=submit]');
+         const modalContext = captureModalContext();
+@@ -1419,9 +1458,12 @@ export async function render(container, { user } = {}) {
+   // Ein Ausfall dieser Abfrage darf die Verwaltung nicht kosten: ohne Antwort
+   // bleibt es beim bisherigen Formular mit Pflicht-Passwort.
+   try {
+-    ssoAvailable = (await api.get('/auth/oidc/config'))?.enabled === true;
++    const ssoConfig = await api.get('/auth/oidc/config');
++    ssoAvailable = ssoConfig?.enabled === true;
++    homeAssistantSso = ssoAvailable && ssoConfig?.provider === 'homeassistant';
+   } catch {
+     ssoAvailable = false;
++    homeAssistantSso = false;
+   }
+   // Derselbe Grundsatz wie darueber: faellt der Katalog aus, bleibt der Hinweis
+   // unter den Startrechten ohne Modulnamen, aber das Formular funktioniert.
 diff --git a/server/auth.js b/server/auth.js
-index e275b93..f2d052f 100644
+index e275b93c6..03270bf71 100644
 --- a/server/auth.js
 +++ b/server/auth.js
-@@ -42,7 +42,12 @@ import {
+@@ -42,7 +42,13 @@ import {
    getConfig as getOidcConfig,
    exchangeAuthorizationCode,
    describeOidcError,
@@ -475,11 +781,22 @@ index e275b93..f2d052f 100644
 +import {
 +  buildHomeAssistantAuthorizationUrl,
 +  completeHomeAssistantLogin,
++  getHomeAssistantConfig,
 +} from './services/homeassistant-auth.js';
  import { emailService as defaultEmailService } from './services/email.js';
  import { passwordResetService as defaultResetService } from './services/password-reset.js';
  import { inviteService as defaultInviteService } from './services/invites.js';
-@@ -2373,6 +2378,9 @@ router.get('/oidc/config', (_req, res) => {
+@@ -659,6 +665,9 @@ function publicUser(row) {
+     // 2FA-Uebersicht, die aus demselben Grund nicht an /auth/users haengt.
+     // Ueber sich selbst erfaehrt es jedes Konto aus GET /me (#1703).
+     ...(row.sso_only !== undefined && { sso_only: Boolean(row.sso_only) }),
++    // Die Home-Assistant-Benutzer-ID, an die ein Administrator das Konto
++    // gebunden hat - nur in den Admin-Abfragen, die sie mitselektieren.
++    ...(row.homeassistant_user_id !== undefined && { homeassistant_user_id: row.homeassistant_user_id ?? null }),
+   };
+ }
+ 
+@@ -2373,6 +2382,9 @@ router.get('/oidc/config', (_req, res) => {
    const passwordLoginEnabled = isPasswordLoginEnabled();
    res.json({
      enabled: isOidcEnabled(),
@@ -489,7 +806,7 @@ index e275b93..f2d052f 100644
      password_login_enabled: passwordLoginEnabled,
      guest_password_login_enabled: !passwordLoginEnabled && hasSplitExpenseGuests(),
    });
-@@ -2392,6 +2400,8 @@ router.get('/oidc/config', (_req, res) => {
+@@ -2392,6 +2404,8 @@ router.get('/oidc/config', (_req, res) => {
   * @param {object} extra  zusätzliche Session-Felder, z. B. { linkUserId }
   */
  async function beginOidcFlow(req, config, extra = {}) {
@@ -498,7 +815,7 @@ index e275b93..f2d052f 100644
    const state         = oidcClient.randomState();
    const nonce         = oidcClient.randomNonce();
    const codeVerifier  = oidcClient.randomPKCECodeVerifier();
-@@ -2418,6 +2428,26 @@ async function beginOidcFlow(req, config, extra = {}) {
+@@ -2418,6 +2432,26 @@ async function beginOidcFlow(req, config, extra = {}) {
    }).href;
  }
  
@@ -525,7 +842,7 @@ index e275b93..f2d052f 100644
  router.get('/oidc/start', refuseWhileRestoring, async (req, res) => {
    try {
      const config = await getOidcConfig();
-@@ -2532,24 +2562,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
+@@ -2532,24 +2566,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
        return res.redirect('/login?error=oidc_state_mismatch');
      }
  
@@ -566,7 +883,7 @@ index e275b93..f2d052f 100644
 +        }
 +        throw err;
 +      }
-+      userinfo = { name: claims.name };
++      userinfo = { name: claims.name, preferred_username: claims.preferred_username };
 +    } else {
 +      // Der Tausch sendet die redirect_uri der Authorize-Anfrage woertlich; von
 +      // der eingehenden Anfrage kommt nur die Query (code, state, ...), weder
@@ -592,12 +909,243 @@ index e275b93..f2d052f 100644
  
      // Verknüpfungs-Lauf (#832): der Nutzer ist bereits angemeldet und bindet
      // sein OIDC-Konto an genau dieses Konto. Kein Anlegen, kein Zuordnen über
+@@ -3208,11 +3268,12 @@ router.get('/users', requireAuth, (req, res) => {
+       ? db.get().prepare(`
+           SELECT ${USER_PUBLIC_COLUMNS},
+                  EXISTS(SELECT 1 FROM housekeeping_workers hw WHERE hw.user_id = users.id) AS is_worker,
+-                 (password_hash = ?) AS sso_only
++                 (password_hash = ?) AS sso_only,
++                 (CASE WHEN oidc_provider = ? THEN oidc_sub END) AS homeassistant_user_id
+           FROM users
+           WHERE NOT EXISTS (SELECT 1 FROM display_accounts da WHERE da.user_id = users.id)
+           ORDER BY ${activeAccountSql('users')} DESC, ${memberOrderSql('users')}
+-        `).all(OIDC_PASSWORD_SENTINEL)
++        `).all(OIDC_PASSWORD_SENTINEL, homeAssistantProviderKey())
+       : db.get().prepare(`
+           SELECT ${USER_PUBLIC_COLUMNS},
+                  EXISTS(SELECT 1 FROM housekeeping_workers hw WHERE hw.user_id = users.id) AS is_worker
+@@ -3433,8 +3494,54 @@ router.post('/api-tokens/:id/remove', requireAuth, requireAdmin, csrfMiddleware,
+  */
+ function adminUserRow(userId) {
+   return db.get()
+-    .prepare(`SELECT ${USER_PUBLIC_COLUMNS}, (password_hash = ?) AS sso_only FROM users WHERE id = ?`)
+-    .get(OIDC_PASSWORD_SENTINEL, userId);
++    .prepare(`SELECT ${USER_PUBLIC_COLUMNS}, (password_hash = ?) AS sso_only,
++              (CASE WHEN oidc_provider = ? THEN oidc_sub END) AS homeassistant_user_id FROM users WHERE id = ?`)
++    .get(OIDC_PASSWORD_SENTINEL, homeAssistantProviderKey(), userId);
++}
++
++/**
++ * Unter welchem `oidc_provider` die Home-Assistant-Anmeldung ihre Konten
++ * ablegt: der `iss`, den completeHomeAssistantLogin liefert. `null`, wenn
++ * Home Assistant nicht die SSO-Quelle ist - dann zeigt die Verwaltung keine ID.
++ */
++function homeAssistantProviderKey() {
++  return ssoProvider() === 'homeassistant' ? getHomeAssistantConfig().url : null;
++}
++
++/**
++ * Liest `homeassistant_user_id` aus einem Admin-Request.
++ *
++ * Home Assistant hat keinen E-Mail-Claim, also findet die erste Anmeldung ein
++ * bestehendes Konto nie von selbst, und Verknuepfen unter Einstellungen > Konto
++ * setzt eine Passwort-Anmeldung voraus. Ein Konto ohne Passwort liesse sich so
++ * nie an einen HA-Benutzer binden. Der Administrator traegt die ID deshalb
++ * selbst ein (HA: Einstellungen > Personen > Benutzer, erweiterter Modus).
++ *
++ * Nur fuer Home Assistant: dort ist die ID eine feste, ablesbare 32-stellige
++ * Hex-Kennung. Ein `sub` beliebiger OIDC-Anbieter bleibt beim Verknuepfen
++ * durch den Nutzer selbst, der ihn mit seiner Anmeldung belegt.
++ *
++ * @returns {{ value: undefined|null|string, error?: string }}
++ *   `undefined` = unveraendert, `null` = Bindung loesen, sonst die ID.
++ */
++function parseHomeAssistantUserId(body) {
++  if (body.homeassistant_user_id === undefined) return { value: undefined };
++  const raw = body.homeassistant_user_id === null ? '' : String(body.homeassistant_user_id).trim().toLowerCase();
++  if (ssoProvider() !== 'homeassistant') {
++    // Leer mitgeschickt ist folgenlos; eine ID ohne HA-Anmeldung waere tot.
++    if (!raw) return { value: undefined };
++    return { error: 'A Home Assistant user ID requires sign-in with Home Assistant (HOMEASSISTANT_URL).' };
++  }
++  if (!raw) return { value: null };
++  if (!/^[0-9a-f]{32}$/.test(raw)) {
++    return { error: 'A Home Assistant user ID is 32 hexadecimal characters.' };
++  }
++  return { value: raw };
++}
++
++/** Ist die HA-ID schon an ein ANDERES Konto gebunden? */
++function homeAssistantUserIdTaken(sub, excludeUserId = null) {
++  return !!db.get().prepare('SELECT 1 FROM users WHERE oidc_sub = ? AND id IS NOT ?').get(sub, excludeUserId);
+ }
+ 
+ /**
+@@ -3549,7 +3656,18 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
+ 
+     // Erst hier, weil die Pruefung die E-Mail braucht: ein neues Konto ist noch
+     // mit nichts verknuepft, also ist die Adresse sein einziger Weg hinein.
+-    const ssoOnlyError = assertSsoOnlyAllowed(ssoOnly, password, { email: memberFields.values.email });
++    const haUserId = parseHomeAssistantUserId(req.body);
++    if (haUserId.error) return res.status(400).json({ error: haUserId.error, code: 400 });
++    if (haUserId.value && homeAssistantUserIdTaken(haUserId.value)) {
++      return res.status(409).json({
++        error: 'This Home Assistant user is already linked to another member.', code: 409, reason: 'sub_taken',
++      });
++    }
++
++    const ssoOnlyError = assertSsoOnlyAllowed(ssoOnly, password, {
++      linked: !!haUserId.value,
++      email: memberFields.values.email,
++    });
+     if (ssoOnlyError) return res.status(400).json({ error: ssoOnlyError, code: 400 });
+ 
+     const hash = ssoOnly ? OIDC_PASSWORD_SENTINEL : await hashPassword(password);
+@@ -3561,6 +3679,10 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
+           VALUES (?, ?, ?, ?, ?, ?, ?)
+         `)
+         .run(username, display_name, hash, avatar_color, normalizedAvatarData ?? null, role, family_role);
++      if (haUserId.value) {
++        db.get().prepare('UPDATE users SET oidc_sub = ?, oidc_provider = ? WHERE id = ?')
++          .run(haUserId.value, homeAssistantProviderKey(), created.lastInsertRowid);
++      }
+       // Kinder-Startrechte (R20): in derselben Transaktion wie das Konto, damit
+       // es nie einen Moment mit Budget und Haushaltshilfe-Loehnen gibt.
+       applyChildStartPermissions(db.get(), {
+@@ -3669,11 +3791,28 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+     // Ein bereits verknuepftes Konto braucht keine E-Mail mehr - sein `sub`
+     // findet es. Sonst zaehlt die Adresse, die nach diesem Aufruf gilt.
+     const linkedRow = db.get().prepare('SELECT oidc_sub FROM users WHERE id = ?').get(userId);
++    const haUserId = parseHomeAssistantUserId(req.body);
++    if (haUserId.error) return res.status(400).json({ error: haUserId.error, code: 400 });
++    // Nur ein echter Wechsel zaehlt; die Verwaltung schickt das Feld bei jeder
++    // Speicherung mit.
++    // Verglichen wird mit der ID, die die Verwaltung SIEHT: eine Bindung an
++    // einen frueheren OIDC-Anbieter zeigt sie leer an, und ein leer
++    // zurueckgeschicktes Feld darf die nicht stillschweigend loesen.
++    const currentHaUserId = adminUserRow(userId)?.homeassistant_user_id ?? null;
++    const haLinkChange = haUserId.value !== undefined && haUserId.value !== currentHaUserId
++      ? haUserId.value
++      : undefined;
++    if (haLinkChange && homeAssistantUserIdTaken(haLinkChange, userId)) {
++      return res.status(409).json({
++        error: 'This Home Assistant user is already linked to another member.', code: 409, reason: 'sub_taken',
++      });
++    }
++    const linkedAfter = haLinkChange === undefined ? !!linkedRow?.oidc_sub : !!haLinkChange;
+     const effectiveEmail = memberFields.values.email !== undefined
+       ? memberFields.values.email
+       : existing.email;
+     const ssoOnlyError = assertSsoOnlyAllowed(ssoOnly === true, newPassword, {
+-      linked: !!linkedRow?.oidc_sub,
++      linked: linkedAfter,
+       email: effectiveEmail,
+       excludeUserId: userId,
+     });
+@@ -3686,6 +3825,18 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+     if (ssoOnly === false && isSsoOnlyAccount(existingHash) && !newPassword) {
+       return res.status(400).json({ error: 'Turning off SSO-only requires setting a password.', code: 400 });
+     }
++    // Loesen kostet ein Konto ohne Passwort den einzigen Zugang - wie bei
++    // unlinkOidcAccount. Wer zugleich ein Passwort setzt, darf.
++    if (haLinkChange === null) {
++      const staysSsoOnly = ssoOnly === true || (ssoOnly === null && isSsoOnlyAccount(existingHash));
++      if (staysSsoOnly && !newPassword) {
++        return res.status(400).json({
++          error: 'An account without a password cannot be unlinked. Set a password first.', code: 400, reason: 'no_password',
++        });
++      }
++      const lastSsoAdminError = assertSsoAdminWouldRemain(userId, 'member');
++      if (lastSsoAdminError) return res.status(400).json({ error: lastSsoAdminError, code: 400, reason: 'last_sso_admin' });
++    }
+ 
+     // Ein Ehemaliger wird nicht Administrator (#1381): er kaeme nie an
+     // `requireAdmin` vorbei, stuende aber als Administrator in der Verwaltung.
+@@ -3724,6 +3875,10 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+       if (newPasswordHash) {
+         db.get().prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newPasswordHash, userId);
+       }
++      if (haLinkChange !== undefined) {
++        db.get().prepare('UPDATE users SET oidc_sub = ?, oidc_provider = ? WHERE id = ?')
++          .run(haLinkChange, haLinkChange ? homeAssistantProviderKey() : null, userId);
++      }
+ 
+       syncFamilyMemberArtifacts(db.get(), userId, {
+         displayName,
+diff --git a/server/openapi/paths/auth.js b/server/openapi/paths/auth.js
+index bee8e2111..3ae6c64dc 100644
+--- a/server/openapi/paths/auth.js
++++ b/server/openapi/paths/auth.js
+@@ -682,6 +682,7 @@ export function authPaths() {
+ // #2267: die Gruende, die die Anmelde- und Kontorouten neben `error` senden.
+ const INVALID_CODE = '`invalid_code` (400, the code is wrong or expired)';
+ const NOT_ENABLED = '`not_enabled` (409, two-factor authentication is not turned on)';
++const HA_SUB_TAKEN = '`sub_taken` (409, this Home Assistant user is already bound to another member)';
+ const DEACTIVATED_SUBJECT = '`account_deactivated` (400, the chosen account is deactivated)';
+ const CASE_REASONS = {
+   '/api/v1/auth/login': {
+@@ -692,6 +693,12 @@ const CASE_REASONS = {
+   '/api/v1/auth/2fa/recovery-codes': { post: `${INVALID_CODE}, ${NOT_ENABLED}` },
+   '/api/v1/auth/logout-others': { post: '`browser_session_required` (403, only a signed-in browser session can sign out the other sessions, not an API token)' },
+   '/api/v1/auth/setup': { post: '`setup_completed` (403, setup has already been completed)' },
+-  '/api/v1/auth/users/{id}': { patch: '`account_deactivated` (400, a deactivated account cannot become an administrator)' },
++  '/api/v1/auth/users': { post: HA_SUB_TAKEN },
++  '/api/v1/auth/users/{id}': {
++    patch: '`account_deactivated` (400, a deactivated account cannot become an administrator), '
++      + `${HA_SUB_TAKEN}, \`no_password\` (400, removing the Home Assistant binding would leave an account without a `
++      + 'password with no way in), `last_sso_admin` (400, removing the binding of the last administrator linked to SSO '
++      + 'would switch password login back on)',
++  },
+   '/api/v1/auth/api-tokens': { post: DEACTIVATED_SUBJECT },
+ };
+diff --git a/server/openapi/schemas.js b/server/openapi/schemas.js
+index 702de7739..41e546130 100644
+--- a/server/openapi/schemas.js
++++ b/server/openapi/schemas.js
+@@ -868,6 +868,11 @@ export const schemas = {
+               description: 'Only present on GET /auth/users for administrators: the account carries no '
+                 + 'password and can only be entered through SSO.',
+             },
++            homeassistant_user_id: {
++              type: ['string', 'null'],
++              description: 'Only present for administrators (GET /auth/users and the create/update responses), and only '
++                + 'set while sign-in with Home Assistant is active: the Home Assistant user this account is bound to.',
++            },
+             sort_order: {
+               type: ['integer', 'null'],
+               description: 'Position in the household member order, or null: for a member that has not been '
+@@ -1006,6 +1011,12 @@ export const schemas = {
+                 + 'Requires OIDC to be configured, and rejects a password sent alongside it. '
+                 + 'Deliberately explicit rather than inferred from a missing password.',
+             },
++            homeassistant_user_id: {
++              type: ['string', 'null'],
++              description: 'Only with sign-in with Home Assistant (HOMEASSISTANT_URL): bind the account to this Home '
++                + 'Assistant user ID (32 hex characters), so its first Home Assistant sign-in finds it. Home Assistant '
++                + 'sends no email address, so this is the only way to prepare an SSO-only account. Counts as linked for sso_only. 409 if another member has it.',
++            },
+             avatar_color: { type: 'string' },
+             avatar_data: { type: ['string', 'null'], description: 'PNG, JPEG, or WebP data URL.' },
+             family_role: { type: 'string', enum: ['dad', 'mom', 'parent', 'child', 'grandparent', 'relative', 'other'] },
+@@ -1029,6 +1040,12 @@ export const schemas = {
+                 + 'true clears the password; false requires a password to be sent with it, otherwise the '
+                 + 'account would be left with no way in at all. Omit to leave unchanged.',
+             },
++            homeassistant_user_id: {
++              type: ['string', 'null'],
++              description: 'Only with sign-in with Home Assistant (HOMEASSISTANT_URL): bind the account to this Home '
++                + 'Assistant user ID (32 hex characters), so its first Home Assistant sign-in finds it. Home Assistant '
++                + 'sends no email address, so this is the only way to prepare an SSO-only account. null or empty removes the binding (refused for an account without a password). Omit to leave unchanged.',
++            },
+             avatar_color: { type: 'string' },
+             avatar_data: { type: ['string', 'null'], description: 'PNG, JPEG, or WebP data URL. Use null to remove.' },
+             family_role: { type: 'string', enum: ['dad', 'mom', 'parent', 'child', 'grandparent', 'relative', 'other'] },
 diff --git a/server/services/homeassistant-auth.js b/server/services/homeassistant-auth.js
 new file mode 100644
-index 0000000..01d76d2
+index 000000000..f71d2b7c4
 --- /dev/null
 +++ b/server/services/homeassistant-auth.js
-@@ -0,0 +1,245 @@
+@@ -0,0 +1,252 @@
 +/**
 + * Modul: Home Assistant als Anmeldequelle
 + * Zweck: Home Assistant spricht OAuth 2.0 (Authorization Code + PKCE, IndieAuth-
@@ -806,7 +1354,11 @@ index 0000000..01d76d2
 + * @param {URLSearchParams} query  Query der Callback-Anfrage
 + * @param {{state: string, codeVerifier: string}} stored  Session-State des Laufs
 + * @param {{warn: Function}} [log]
-+ * @returns {Promise<{sub: string, iss: string, name: string, is_admin: boolean}>}
++ * Die Admin-Rolle in Home Assistant wird bewusst NICHT weitergegeben: wer HA
++ * verwaltet, verwaltet nicht automatisch den Haushalt. Neue Konten starten wie
++ * bei jedem SSO-Anbieter als `member`.
++ *
++ * @returns {Promise<{sub: string, iss: string, name?: string, preferred_username?: string}>}
 + */
 +export async function completeHomeAssistantLogin(config, query, stored, log) {
 +  if (query.get('error')) {
@@ -827,11 +1379,14 @@ index 0000000..01d76d2
 +  const tokens = await exchangeHomeAssistantCode(config, { code, codeVerifier: stored.codeVerifier });
 +  try {
 +    const user = await fetchHomeAssistantUser(config, tokens.access_token);
++    const name = typeof user.name === 'string' && user.name.trim() ? user.name.trim() : undefined;
 +    return {
 +      sub: String(user.id),
 +      iss: config.url,
-+      name: typeof user.name === 'string' ? user.name : undefined,
-+      is_admin: !!(user.is_admin || user.is_owner),
++      name,
++      // HA kennt keinen Benutzernamen-Claim; ohne ihn hiesse ein neues Konto wie
++      // die 32-stellige HA-ID. Bereinigung und `-1`-Suffix macht findOrCreateOidcUser.
++      preferred_username: name,
 +    };
 +  } finally {
 +    // Abgewartet statt nebenher gestartet: der Aufruf ist kurz (lokal, mit
@@ -844,7 +1399,7 @@ index 0000000..01d76d2
 +  }
 +}
 diff --git a/server/services/oidc.js b/server/services/oidc.js
-index d8a91e8..481ce4a 100644
+index d8a91e889..481ce4a39 100644
 --- a/server/services/oidc.js
 +++ b/server/services/oidc.js
 @@ -6,6 +6,7 @@
@@ -903,6 +1458,3 @@ index d8a91e8..481ce4a 100644
    if (_config) return _config;
  
    // Vor der Discovery: ein Tippfehler im Schalter soll beim ersten SSO-Klick
--- 
-2.39.5
-
