@@ -7,13 +7,13 @@
 **The self-hosted family planner [Yuvomi](https://github.com/ulsklyc/yuvomi), packaged as a Home Assistant app.**<br>
 Tasks, calendar, shopping, meals, budget and more, in your Home Assistant sidebar, signed in with your Home Assistant users.
 
-[![Release](https://img.shields.io/github/v/release/phjay-lab/ha-yuvomi?style=flat-square&color=6C3AED&label=release)](https://github.com/phjay-lab/ha-yuvomi/releases)
-[![Lint](https://img.shields.io/github/actions/workflow/status/phjay-lab/ha-yuvomi/lint.yaml?branch=main&style=flat-square&label=lint)](https://github.com/phjay-lab/ha-yuvomi/actions/workflows/lint.yaml)
+[![Release](https://img.shields.io/github/v/release/littleopa/ha-yuvomi?style=flat-square&color=6C3AED&label=release)](https://github.com/littleopa/ha-yuvomi/releases)
+[![Lint](https://img.shields.io/github/actions/workflow/status/littleopa/ha-yuvomi/lint.yaml?branch=main&style=flat-square&label=lint)](https://github.com/littleopa/ha-yuvomi/actions/workflows/lint.yaml)
 [![Yuvomi](https://img.shields.io/badge/Yuvomi-2.83.0-6C3AED?style=flat-square)](https://github.com/ulsklyc/yuvomi/releases)
 ![Architectures](https://img.shields.io/badge/arch-amd64%20%7C%20aarch64-6C3AED?style=flat-square)
-[![License](https://img.shields.io/github/license/phjay-lab/ha-yuvomi?style=flat-square&color=6C3AED)](LICENSE)
+[![License](https://img.shields.io/github/license/littleopa/ha-yuvomi?style=flat-square&color=6C3AED)](LICENSE)
 
-[![Add repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Fphjay-lab%2Fha-yuvomi)
+[![Add repository to my Home Assistant](https://my.home-assistant.io/badges/supervisor_add_addon_repository.svg)](https://my.home-assistant.io/redirect/supervisor_add_addon_repository/?repository_url=https%3A%2F%2Fgithub.com%2Flittleopa%2Fha-yuvomi)
 
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset=".github/assets/dashboard-dark-web.png">
@@ -36,7 +36,7 @@ Tasks, calendar, shopping, meals, budget and more, in your Home Assistant sideba
 
 ## Installation
 
-1. Click the button above, or add `https://github.com/phjay-lab/ha-yuvomi` under **Settings → Apps → App store → ⋮ → Repositories**.
+1. Click the button above, or add `https://github.com/littleopa/ha-yuvomi` under **Settings → Apps → App store → ⋮ → Repositories**.
 2. Install **Yuvomi** and start it.
 3. Open Yuvomi on port `3000` of your Home Assistant host and create the first account. That account becomes the administrator.
 
@@ -95,8 +95,8 @@ Yes. Home Assistant, like most identity providers, refuses to show its login pag
 
 ## Support
 
-- Problems with the app: [open an issue](https://github.com/phjay-lab/ha-yuvomi/issues/new/choose)
-- Questions and ideas: [Discussions](https://github.com/phjay-lab/ha-yuvomi/discussions)
+- Problems with the app: [open an issue](https://github.com/littleopa/ha-yuvomi/issues/new/choose)
+- Questions and ideas: [Discussions](https://github.com/littleopa/ha-yuvomi/discussions)
 - Problems with Yuvomi itself: [ulsklyc/yuvomi](https://github.com/ulsklyc/yuvomi/issues)
 
 ## Credits

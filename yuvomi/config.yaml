@@ -2,7 +2,7 @@ name: Yuvomi
 version: "2.83.0-6"
 slug: yuvomi
 description: Self-hosted family planner – tasks, calendar, shopping, meals, budget and more
-url: https://github.com/phjay-lab/ha-yuvomi/tree/main/yuvomi
+url: https://github.com/littleopa/ha-yuvomi/tree/main/yuvomi
 arch:
   - amd64
   - aarch64

@@ -2,7 +2,7 @@
 
 ## 2.83.0-6
 
-- Repository moved to phjay-lab/ha-yuvomi (old links redirect).
+- Repository moved to littleopa/ha-yuvomi. Please update the repository URL in Home Assistant if you added it under an older name.
 
 ## 2.83.0-5
 

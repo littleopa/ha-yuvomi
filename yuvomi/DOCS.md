@@ -7,7 +7,7 @@ This app runs the official Yuvomi image inside Home Assistant.
 ## Installation
 
 1. Add this repository in **Settings → Apps → App store → ⋮ → Repositories**:
-   `https://github.com/phjay-lab/ha-yuvomi`
+   `https://github.com/littleopa/ha-yuvomi`
 2. Install **Yuvomi** and start it.
 3. Click **Open web UI** (or browse to `http://<home-assistant>:3000`) and
    create the first account – it becomes the administrator.
@@ -121,5 +121,5 @@ that address is also listed in `frame-ancestors`.
 
 ## Support
 
-- App issues: <https://github.com/phjay-lab/ha-yuvomi/issues>
+- App issues: <https://github.com/littleopa/ha-yuvomi/issues>
 - Yuvomi itself: <https://github.com/ulsklyc/yuvomi/issues>
