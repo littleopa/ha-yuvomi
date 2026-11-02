@@ -9,7 +9,7 @@ Tasks, calendar, shopping, meals, budget and more, in your Home Assistant sideba
 
 [![Release](https://img.shields.io/github/v/release/littleopa/ha-yuvomi?style=flat-square&color=6C3AED&label=release)](https://github.com/littleopa/ha-yuvomi/releases)
 [![Lint](https://img.shields.io/github/actions/workflow/status/littleopa/ha-yuvomi/lint.yaml?branch=main&style=flat-square&label=lint)](https://github.com/littleopa/ha-yuvomi/actions/workflows/lint.yaml)
-[![Yuvomi](https://img.shields.io/badge/Yuvomi-2.83.0-6C3AED?style=flat-square)](https://github.com/ulsklyc/yuvomi/releases)
+[![Yuvomi](https://img.shields.io/badge/Yuvomi-2.84.0-6C3AED?style=flat-square)](https://github.com/ulsklyc/yuvomi/releases)
 ![Architectures](https://img.shields.io/badge/arch-amd64%20%7C%20aarch64-6C3AED?style=flat-square)
 [![License](https://img.shields.io/github/license/littleopa/ha-yuvomi?style=flat-square&color=6C3AED)](LICENSE)
 

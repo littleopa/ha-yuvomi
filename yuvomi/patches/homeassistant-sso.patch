@@ -1,13 +1,8 @@
-Sign in with Home Assistant for Yuvomi v2.83.0
-
-Runtime part of https://github.com/ulsklyc/yuvomi/pull/2428 (all three commits),
-rebased onto v2.83.0. Drop this patch once the PR is released.
-
 diff --git a/public/locales/ar.json b/public/locales/ar.json
-index edf1f91d7..384dd794d 100644
+index 20b587faa..44a8387d0 100644
 --- a/public/locales/ar.json
 +++ b/public/locales/ar.json
-@@ -3601,6 +3601,8 @@
+@@ -3603,6 +3603,8 @@
          "memberSsoOnlyLabel": "تسجيل الدخول بـ SSO فقط",
          "memberSsoOnlyHint": "لن يحصل الحساب على كلمة مرور. لا يمكن للعضو تسجيل الدخول إلا عبر SSO.",
          "memberSsoOnlyEditHint": "عند تفعيل هذا الخيار يفقد الحساب كلمة مروره ولا يدخل إلا عبر SSO. لإيقافه يجب تعيين كلمة مرور جديدة.",
@@ -16,7 +11,7 @@ index edf1f91d7..384dd794d 100644
          "healthPreventionNotifyCaregiversLabel": "إشعار مقدمي الرعاية",
          "healthPreventionNotifyCaregiversHint": "يرى مقدم الرعاية بالفعل ما هو مستحق عند فتح التطبيق. يؤدي تفعيل هذا الخيار أيضًا إلى إرسال إشعار فوري يذكر اسمك - معطّل افتراضيًا، لأن إذن الرعاية وحده لا يعني إشعارًا.",
          "healthPreventionNotifyCaregiversSaved": "تم حفظ إعداد الإشعارات.",
-@@ -3803,6 +3805,7 @@
+@@ -3816,6 +3818,7 @@
          "hidePassword": "إخفاء كلمة المرور",
          "version": "v{{version}}",
          "loginWithSso": "تسجيل الدخول بـ SSO",
@@ -25,10 +20,10 @@ index edf1f91d7..384dd794d 100644
          "ssoError": "فشل تسجيل الدخول بـ SSO. يرجى المحاولة مرة أخرى.",
          "ssoNoAccount": "لا يوجد حساب هنا بعد لتسجيل الدخول بـ SSO هذا. يرجى التواصل مع مسؤول منزلك.",
 diff --git a/public/locales/cs.json b/public/locales/cs.json
-index 8108dd5f1..892c0324e 100644
+index f21d0390d..7cc2de689 100644
 --- a/public/locales/cs.json
 +++ b/public/locales/cs.json
-@@ -3389,6 +3389,8 @@
+@@ -3391,6 +3391,8 @@
          "memberSsoOnlyLabel": "Pouze přihlášení přes SSO",
          "memberSsoOnlyHint": "Účet nedostane žádné heslo. Člen se může přihlásit pouze přes SSO.",
          "memberSsoOnlyEditHint": "Je-li přepínač zapnutý, účet ztratí své heslo a dostane se dovnitř jen přes SSO. K vypnutí je nutné nastavit nové heslo.",
@@ -37,7 +32,7 @@ index 8108dd5f1..892c0324e 100644
          "healthPreventionNotifyCaregiversLabel": "Upozornit pečovatele",
          "healthPreventionNotifyCaregiversHint": "Pečovatel už při otevření aplikace vidí, co je splatné. Tímto mu navíc pošlete push upozornění s vaším jménem - ve výchozím stavu vypnuto, protože oprávnění k péči samo o sobě upozornění neznamená.",
          "healthPreventionNotifyCaregiversSaved": "Nastavení upozornění uloženo.",
-@@ -3581,6 +3583,7 @@
+@@ -3594,6 +3596,7 @@
          "hidePassword": "Skrýt heslo",
          "version": "v{{version}}",
          "loginWithSso": "Přihlásit se přes SSO",
@@ -46,10 +41,10 @@ index 8108dd5f1..892c0324e 100644
          "ssoError": "Přihlášení přes SSO selhalo. Zkuste to prosím znovu.",
          "ssoNoAccount": "Pro toto přihlášení přes SSO zde zatím není žádný účet. Obraťte se na správce vaší domácnosti.",
 diff --git a/public/locales/de.json b/public/locales/de.json
-index 310bcc3ec..5639ff378 100644
+index 053cd9db6..70dfc8571 100644
 --- a/public/locales/de.json
 +++ b/public/locales/de.json
-@@ -3297,6 +3297,8 @@
+@@ -3299,6 +3299,8 @@
          "memberSsoOnlyLabel": "Nur SSO-Anmeldung",
          "memberSsoOnlyHint": "Das Konto bekommt kein Passwort. Anmelden kann sich das Mitglied nur über SSO.",
          "memberSsoOnlyEditHint": "Ist der Schalter an, verliert das Konto sein Passwort und kommt nur noch über SSO herein. Zum Ausschalten muss ein neues Passwort gesetzt werden.",
@@ -58,7 +53,7 @@ index 310bcc3ec..5639ff378 100644
          "healthPreventionNotifyCaregiversLabel": "Betreuende Personen benachrichtigen",
          "healthPreventionNotifyCaregiversHint": "Eine betreuende Person sieht bereits beim Öffnen der App, was fällig ist. Diese Einstellung schickt ihr zusätzlich eine Push-Benachrichtigung mit deinem Namen - standardmäßig aus, denn die Betreuungs-Zusage allein bedeutet noch keine Benachrichtigung.",
          "healthPreventionNotifyCaregiversSaved": "Benachrichtigungs-Einstellung gespeichert.",
-@@ -3481,6 +3483,7 @@
+@@ -3494,6 +3496,7 @@
          "hidePassword": "Passwort verbergen",
          "version": "v{{version}}",
          "loginWithSso": "Mit SSO anmelden",
@@ -67,10 +62,10 @@ index 310bcc3ec..5639ff378 100644
          "ssoError": "SSO-Anmeldung fehlgeschlagen. Bitte erneut versuchen.",
          "ssoNoAccount": "Für diese SSO-Anmeldung gibt es hier noch kein Konto. Wende dich an die Administration deines Haushalts.",
 diff --git a/public/locales/el.json b/public/locales/el.json
-index f42b9c5df..99b0ed5e7 100644
+index 08cdcb1aa..ebe4b7eca 100644
 --- a/public/locales/el.json
 +++ b/public/locales/el.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Μόνο σύνδεση με SSO",
          "memberSsoOnlyHint": "Ο λογαριασμός δεν αποκτά κωδικό. Το μέλος μπορεί να συνδεθεί μόνο μέσω SSO.",
          "memberSsoOnlyEditHint": "Με τον διακόπτη ενεργό, ο λογαριασμός χάνει τον κωδικό του και μπαίνει μόνο μέσω SSO. Για την απενεργοποίηση πρέπει να οριστεί νέος κωδικός.",
@@ -79,7 +74,7 @@ index f42b9c5df..99b0ed5e7 100644
          "healthPreventionNotifyCaregiversLabel": "Ειδοποίηση φροντιστών",
          "healthPreventionNotifyCaregiversHint": "Ο φροντιστής βλέπει ήδη τι εκκρεμεί όταν ανοίγει την εφαρμογή. Αυτή η ρύθμιση στέλνει επιπλέον μια ειδοποίηση push με το όνομά σας - απενεργοποιημένη από προεπιλογή, αφού η άδεια φροντίδας από μόνη της δεν σημαίνει ειδοποίηση.",
          "healthPreventionNotifyCaregiversSaved": "Η ρύθμιση ειδοποιήσεων αποθηκεύτηκε.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Απόκρυψη κωδικού",
          "version": "v{{version}}",
          "loginWithSso": "Σύνδεση με SSO",
@@ -88,10 +83,10 @@ index f42b9c5df..99b0ed5e7 100644
          "ssoError": "Η σύνδεση SSO απέτυχε. Παρακαλώ δοκιμάστε ξανά.",
          "ssoNoAccount": "Δεν υπάρχει ακόμη λογαριασμός εδώ για αυτή τη σύνδεση SSO. Απευθυνθείτε στον διαχειριστή του νοικοκυριού σας.",
 diff --git a/public/locales/en.json b/public/locales/en.json
-index 8c1cf9e07..b4b5c655f 100644
+index 26322032f..a20ae9873 100644
 --- a/public/locales/en.json
 +++ b/public/locales/en.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "SSO sign-in only",
          "memberSsoOnlyHint": "The account gets no password. The member can only sign in through SSO.",
          "memberSsoOnlyEditHint": "With this on, the account loses its password and only gets in through SSO. Turning it off requires setting a new password.",
@@ -100,7 +95,7 @@ index 8c1cf9e07..b4b5c655f 100644
          "healthPreventionNotifyCaregiversLabel": "Notify caregivers when something is due",
          "healthPreventionNotifyCaregiversHint": "A caregiver can already see what's due when they open the app. Turning this on also sends them a push notification naming you - off by default, since caregiving access alone does not mean a notification.",
          "healthPreventionNotifyCaregiversSaved": "Notification setting saved.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Hide password",
          "version": "v{{version}}",
          "loginWithSso": "Sign in with SSO",
@@ -109,10 +104,10 @@ index 8c1cf9e07..b4b5c655f 100644
          "ssoError": "SSO sign-in failed. Please try again.",
          "ssoNoAccount": "There is no account here yet for this SSO sign-in. Please contact your household's administrator.",
 diff --git a/public/locales/es.json b/public/locales/es.json
-index 6db7212da..aff58a9a1 100644
+index 23cdf94b6..fff8ca3b6 100644
 --- a/public/locales/es.json
 +++ b/public/locales/es.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Solo inicio de sesión con SSO",
          "memberSsoOnlyHint": "La cuenta no recibe contraseña. El miembro solo puede iniciar sesión con SSO.",
          "memberSsoOnlyEditHint": "Con el interruptor activado, la cuenta pierde su contraseña y solo entra mediante SSO. Para desactivarlo hay que establecer una contraseña nueva.",
@@ -121,7 +116,7 @@ index 6db7212da..aff58a9a1 100644
          "healthPreventionNotifyCaregiversLabel": "Avisar a mis cuidadores",
          "healthPreventionNotifyCaregiversHint": "Quien te cuida ya ve lo que está pendiente al abrir la app. Esta opción además le envía una notificación push con tu nombre - desactivada por defecto, ya que el permiso de cuidado por sí solo no implica notificaciones.",
          "healthPreventionNotifyCaregiversSaved": "Ajuste de notificaciones guardado.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Ocultar contraseña",
          "version": "v{{version}}",
          "loginWithSso": "Iniciar sesión con SSO",
@@ -130,10 +125,10 @@ index 6db7212da..aff58a9a1 100644
          "ssoError": "Error al iniciar sesión con SSO. Inténtalo de nuevo.",
          "ssoNoAccount": "Todavía no hay ninguna cuenta aquí para este inicio de sesión con SSO. Ponte en contacto con la administración de tu hogar.",
 diff --git a/public/locales/fa.json b/public/locales/fa.json
-index ecf641345..294d786fd 100644
+index bc9cae5ce..ad3f780e9 100644
 --- a/public/locales/fa.json
 +++ b/public/locales/fa.json
-@@ -3297,6 +3297,8 @@
+@@ -3299,6 +3299,8 @@
          "memberSsoOnlyLabel": "فقط ورود با SSO",
          "memberSsoOnlyHint": "این حساب رمز عبوری دریافت نمی‌کند. عضو تنها می‌تواند از طریق SSO وارد شود.",
          "memberSsoOnlyEditHint": "با روشن بودن این کلید، حساب رمز عبور خود را از دست می‌دهد و فقط از طریق SSO وارد می‌شود. برای خاموش کردن باید رمز عبور جدیدی تعیین شود.",
@@ -142,7 +137,7 @@ index ecf641345..294d786fd 100644
          "healthPreventionNotifyCaregiversLabel": "اطلاع‌رسانی به مراقبان",
          "healthPreventionNotifyCaregiversHint": "مراقب شما هنگام باز کردن برنامه از قبل می‌بیند چه چیزی سررسیده است. این گزینه علاوه بر آن یک اعلان فوری با نام شما ارسال می‌کند - به‌طور پیش‌فرض خاموش است، زیرا مجوز مراقبت به‌تنهایی به معنای اعلان نیست.",
          "healthPreventionNotifyCaregiversSaved": "تنظیم اعلان ذخیره شد.",
-@@ -3481,6 +3483,7 @@
+@@ -3494,6 +3496,7 @@
          "hidePassword": "پنهان‌سازی رمز عبور",
          "version": "v{{version}}",
          "loginWithSso": "ورود با SSO",
@@ -151,10 +146,10 @@ index ecf641345..294d786fd 100644
          "ssoError": "ورود با SSO ناموفق بود. لطفاً دوباره تلاش کنید.",
          "ssoNoAccount": "هنوز برای این ورود با SSO حسابی در اینجا وجود ندارد. لطفاً با مدیر خانوار خود تماس بگیرید.",
 diff --git a/public/locales/fil.json b/public/locales/fil.json
-index cf8e2a0cd..cf80cbec9 100644
+index 33185faad..8e9e2e0b1 100644
 --- a/public/locales/fil.json
 +++ b/public/locales/fil.json
-@@ -3297,6 +3297,8 @@
+@@ -3299,6 +3299,8 @@
          "memberSsoOnlyLabel": "Pag-sign in sa SSO lamang",
          "memberSsoOnlyHint": "Walang password na makukuha ang account. Makakapag-sign in lang ang miyembro sa pamamagitan ng SSO.",
          "memberSsoOnlyEditHint": "Kapag naka-on ito, mawawala ang password ng account at sa SSO na lang ito papasok. Para i-off, kailangang magtakda ng bagong password.",
@@ -163,7 +158,7 @@ index cf8e2a0cd..cf80cbec9 100644
          "healthPreventionNotifyCaregiversLabel": "Abisuhan ang mga tagapag-alaga",
          "healthPreventionNotifyCaregiversHint": "Nakikita na ng tagapag-alaga kung ano ang due sa pagbukas ng app. Ang pagbukas nito ay magpapadala rin sa kanila ng push notification na may pangalan mo - naka-off bilang default, dahil ang access ng pag-aalaga lang ay hindi awtomatikong nangangahulugan ng notification.",
          "healthPreventionNotifyCaregiversSaved": "Na-save ang setting ng notification.",
-@@ -3481,6 +3483,7 @@
+@@ -3494,6 +3496,7 @@
          "hidePassword": "Itago ang password",
          "version": "v{{version}}",
          "loginWithSso": "Mag-sign in gamit ang SSO",
@@ -172,10 +167,10 @@ index cf8e2a0cd..cf80cbec9 100644
          "ssoError": "Nabigo ang pag-sign in gamit ang SSO. Pakisubukang muli.",
          "ssoNoAccount": "Wala pang account dito para sa pag-sign in na ito gamit ang SSO. Makipag-ugnayan sa administrador ng iyong sambahayan.",
 diff --git a/public/locales/fr.json b/public/locales/fr.json
-index 944bb2a1f..88351efcc 100644
+index f1b82654c..08c705b34 100644
 --- a/public/locales/fr.json
 +++ b/public/locales/fr.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Connexion SSO uniquement",
          "memberSsoOnlyHint": "Le compte ne reçoit pas de mot de passe. Le membre ne peut se connecter que via le SSO.",
          "memberSsoOnlyEditHint": "Lorsque l'option est activée, le compte perd son mot de passe et n'entre plus que via le SSO. Pour la désactiver, il faut définir un nouveau mot de passe.",
@@ -184,7 +179,7 @@ index 944bb2a1f..88351efcc 100644
          "healthPreventionNotifyCaregiversLabel": "Prévenir les aidants",
          "healthPreventionNotifyCaregiversHint": "Un aidant voit déjà ce qui est dû en ouvrant l'appli. Cette option lui envoie en plus une notification push avec votre nom - désactivée par défaut, car l'autorisation d'aide seule n'implique pas de notification.",
          "healthPreventionNotifyCaregiversSaved": "Paramètre de notification enregistré.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Masquer le mot de passe",
          "version": "v{{version}}",
          "loginWithSso": "Se connecter avec SSO",
@@ -193,10 +188,10 @@ index 944bb2a1f..88351efcc 100644
          "ssoError": "La connexion SSO a échoué. Veuillez réessayer.",
          "ssoNoAccount": "Aucun compte n'existe encore ici pour cette connexion SSO. Contactez l'administrateur de votre foyer.",
 diff --git a/public/locales/hi.json b/public/locales/hi.json
-index deca2554b..bd24412b1 100644
+index 31c2a5cb3..84452191d 100644
 --- a/public/locales/hi.json
 +++ b/public/locales/hi.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "केवल SSO साइन-इन",
          "memberSsoOnlyHint": "इस खाते को कोई पासवर्ड नहीं मिलेगा। सदस्य केवल SSO से ही साइन इन कर सकता है।",
          "memberSsoOnlyEditHint": "स्विच चालू होने पर खाता अपना पासवर्ड खो देता है और केवल SSO से ही अंदर आता है। बंद करने के लिए नया पासवर्ड सेट करना होगा।",
@@ -205,7 +200,7 @@ index deca2554b..bd24412b1 100644
          "healthPreventionNotifyCaregiversLabel": "देखभालकर्ताओं को सूचित करें",
          "healthPreventionNotifyCaregiversHint": "देखभालकर्ता ऐप खोलते ही देख लेता है कि क्या देय है। इसे चालू करने पर उसे आपका नाम बताते हुए पुश सूचना भी भेजी जाएगी - डिफ़ॉल्ट रूप से बंद, क्योंकि देखभाल की अनुमति अपने आप में सूचना नहीं दर्शाती।",
          "healthPreventionNotifyCaregiversSaved": "सूचना सेटिंग सहेजी गई।",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "पासवर्ड छिपाएं",
          "version": "v{{version}}",
          "loginWithSso": "SSO से साइन इन करें",
@@ -214,10 +209,10 @@ index deca2554b..bd24412b1 100644
          "ssoError": "SSO साइन-इन विफल रहा। कृपया पुनः प्रयास करें।",
          "ssoNoAccount": "इस SSO साइन-इन के लिए यहाँ अभी कोई खाता नहीं है। कृपया अपने घर के प्रशासक से संपर्क करें।",
 diff --git a/public/locales/hu.json b/public/locales/hu.json
-index a47dbc26f..945e3cccc 100644
+index b3a9c4afe..9a2417c8d 100644
 --- a/public/locales/hu.json
 +++ b/public/locales/hu.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Csak SSO-bejelentkezés",
          "memberSsoOnlyHint": "A fiók nem kap jelszót. A tag csak SSO-val tud bejelentkezni.",
          "memberSsoOnlyEditHint": "Bekapcsolt kapcsolóval a fiók elveszíti a jelszavát, és csak SSO-val jut be. A kikapcsoláshoz új jelszót kell megadni.",
@@ -226,7 +221,7 @@ index a47dbc26f..945e3cccc 100644
          "healthPreventionNotifyCaregiversLabel": "Gondozók értesítése",
          "healthPreventionNotifyCaregiversHint": "A gondozó már az alkalmazás megnyitásakor látja, mi esedékes. Ez a beállítás emellett push-értesítést is küld neki a nevével - alapértelmezetten kikapcsolva, mert a gondozási jogosultság önmagában nem jelent értesítést.",
          "healthPreventionNotifyCaregiversSaved": "Az értesítési beállítás mentve.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Jelszó elrejtése",
          "version": "v{{version}}",
          "loginWithSso": "Bejelentkezés SSO-val",
@@ -235,10 +230,10 @@ index a47dbc26f..945e3cccc 100644
          "ssoError": "SSO bejelentkezés sikertelen. Kérjük, próbálja újra.",
          "ssoNoAccount": "Ehhez az SSO bejelentkezéshez itt még nincs fiók. Kérjük, forduljon a háztartás rendszergazdájához.",
 diff --git a/public/locales/id.json b/public/locales/id.json
-index 1b3870029..e276197f6 100644
+index c08d2c2d3..dc4a7e174 100644
 --- a/public/locales/id.json
 +++ b/public/locales/id.json
-@@ -3297,6 +3297,8 @@
+@@ -3299,6 +3299,8 @@
          "memberSsoOnlyLabel": "Hanya masuk dengan SSO",
          "memberSsoOnlyHint": "Akun tidak mendapatkan kata sandi. Anggota hanya dapat masuk melalui SSO.",
          "memberSsoOnlyEditHint": "Jika sakelar aktif, akun kehilangan kata sandinya dan hanya masuk melalui SSO. Untuk mematikannya, kata sandi baru harus ditetapkan.",
@@ -247,7 +242,7 @@ index 1b3870029..e276197f6 100644
          "healthPreventionNotifyCaregiversLabel": "Beri tahu pengasuh",
          "healthPreventionNotifyCaregiversHint": "Pengasuh sudah bisa melihat apa yang jatuh tempo saat membuka aplikasi. Mengaktifkan ini juga mengirim notifikasi push dengan nama Anda - nonaktif secara default, karena akses pengasuhan saja tidak berarti notifikasi.",
          "healthPreventionNotifyCaregiversSaved": "Pengaturan notifikasi disimpan.",
-@@ -3481,6 +3483,7 @@
+@@ -3494,6 +3496,7 @@
          "hidePassword": "Sembunyikan kata sandi",
          "version": "v{{version}}",
          "loginWithSso": "Masuk dengan SSO",
@@ -256,10 +251,10 @@ index 1b3870029..e276197f6 100644
          "ssoError": "Masuk SSO gagal. Silakan coba lagi.",
          "ssoNoAccount": "Belum ada akun di sini untuk masuk SSO ini. Silakan hubungi administrator rumah tangga Anda.",
 diff --git a/public/locales/it.json b/public/locales/it.json
-index 7129ea155..bcee45364 100644
+index 0c07f96f8..f173347de 100644
 --- a/public/locales/it.json
 +++ b/public/locales/it.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Solo accesso con SSO",
          "memberSsoOnlyHint": "L'account non riceve alcuna password. Il membro può accedere solo tramite SSO.",
          "memberSsoOnlyEditHint": "Con l'interruttore attivo l'account perde la sua password ed entra solo tramite SSO. Per disattivarlo occorre impostare una nuova password.",
@@ -268,7 +263,7 @@ index 7129ea155..bcee45364 100644
          "healthPreventionNotifyCaregiversLabel": "Avvisa chi si prende cura di me",
          "healthPreventionNotifyCaregiversHint": "Chi si prende cura di te vede già cosa è in scadenza aprendo l'app. Questa opzione gli invia anche una notifica push con il tuo nome - disattivata per impostazione predefinita, perché l'autorizzazione di assistenza da sola non implica una notifica.",
          "healthPreventionNotifyCaregiversSaved": "Impostazione delle notifiche salvata.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Nascondi password",
          "version": "v{{version}}",
          "loginWithSso": "Accedi con SSO",
@@ -277,10 +272,10 @@ index 7129ea155..bcee45364 100644
          "ssoError": "Accesso SSO non riuscito. Riprova.",
          "ssoNoAccount": "Non esiste ancora un account qui per questo accesso SSO. Contatta l'amministratore della tua famiglia.",
 diff --git a/public/locales/ja.json b/public/locales/ja.json
-index 7b064431a..b5a60cb27 100644
+index 6995a227b..73c9d048b 100644
 --- a/public/locales/ja.json
 +++ b/public/locales/ja.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "SSO サインインのみ",
          "memberSsoOnlyHint": "このアカウントにはパスワードが設定されません。メンバーは SSO でのみサインインできます。",
          "memberSsoOnlyEditHint": "オンにするとアカウントはパスワードを失い、SSO でのみ入れるようになります。オフにするには新しいパスワードの設定が必要です。",
@@ -289,7 +284,7 @@ index 7b064431a..b5a60cb27 100644
          "healthPreventionNotifyCaregiversLabel": "介護者に通知する",
          "healthPreventionNotifyCaregiversHint": "介護者はアプリを開けばすでに期限が来ている項目を確認できます。この設定をオンにすると、あなたの名前を含むプッシュ通知も送信されます - ケア権限があるだけでは通知は行われないため、デフォルトはオフです。",
          "healthPreventionNotifyCaregiversSaved": "通知設定を保存しました。",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "パスワードを非表示",
          "version": "v{{version}}",
          "loginWithSso": "SSOでサインイン",
@@ -298,10 +293,10 @@ index 7b064431a..b5a60cb27 100644
          "ssoError": "SSOサインインに失敗しました。もう一度お試しください。",
          "ssoNoAccount": "このSSOサインインに対応するアカウントはまだ存在しません。世帯の管理者にお問い合わせください。",
 diff --git a/public/locales/ko.json b/public/locales/ko.json
-index 6dfd4a34f..786b23b18 100644
+index de4d935cc..602ad648e 100644
 --- a/public/locales/ko.json
 +++ b/public/locales/ko.json
-@@ -3297,6 +3297,8 @@
+@@ -3299,6 +3299,8 @@
          "memberSsoOnlyLabel": "SSO 로그인만 허용",
          "memberSsoOnlyHint": "이 계정에는 비밀번호가 없습니다. 구성원은 SSO로만 로그인할 수 있습니다.",
          "memberSsoOnlyEditHint": "켜면 계정은 비밀번호를 잃고 SSO로만 들어옵니다. 끄려면 새 비밀번호를 설정해야 합니다.",
@@ -310,7 +305,7 @@ index 6dfd4a34f..786b23b18 100644
          "healthPreventionNotifyCaregiversLabel": "돌봄 제공자에게 알리기",
          "healthPreventionNotifyCaregiversHint": "돌봄 제공자는 앱을 열면 이미 기한이 된 항목을 볼 수 있습니다. 이 설정을 켜면 회원님의 이름이 포함된 푸시 알림도 함께 전송됩니다 - 돌봄 권한만으로는 알림이 발송되지 않으므로 기본값은 꺼짐입니다.",
          "healthPreventionNotifyCaregiversSaved": "알림 설정이 저장되었습니다.",
-@@ -3481,6 +3483,7 @@
+@@ -3494,6 +3496,7 @@
          "hidePassword": "비밀번호 숨기기",
          "version": "v{{version}}",
          "loginWithSso": "SSO로 로그인",
@@ -319,10 +314,10 @@ index 6dfd4a34f..786b23b18 100644
          "ssoError": "SSO 로그인에 실패했습니다. 다시 시도해 주세요.",
          "ssoNoAccount": "이 SSO 로그인에 해당하는 계정이 아직 없습니다. 가정의 관리자에게 문의해 주세요.",
 diff --git a/public/locales/nb.json b/public/locales/nb.json
-index 2fa7d8481..96a69f7fb 100644
+index a68812334..e2c28780d 100644
 --- a/public/locales/nb.json
 +++ b/public/locales/nb.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Kun SSO-innlogging",
          "memberSsoOnlyHint": "Kontoen får ikke et passord. Medlemmet kan bare logge inn via SSO.",
          "memberSsoOnlyEditHint": "Når denne er på, mister kontoen passordet sitt og får kun tilgang via SSO. Å slå den av krever at et nytt passord settes.",
@@ -331,7 +326,7 @@ index 2fa7d8481..96a69f7fb 100644
          "healthPreventionNotifyCaregiversLabel": "Varsle omsorgspersoner når noe forfaller",
          "healthPreventionNotifyCaregiversHint": "En omsorgsperson kan allerede se hva som forfaller når de åpner appen. Ved å slå denne på, vil de også få et push-varsel med navnet ditt - av som standard, siden omsorgstilgang alene ikke betyr et varsel.",
          "healthPreventionNotifyCaregiversSaved": "Varslingsinnstilling lagret.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Skjul passord",
          "version": "v{{version}}",
          "loginWithSso": "Logg inn med SSO",
@@ -340,10 +335,10 @@ index 2fa7d8481..96a69f7fb 100644
          "ssoError": "SSO-innlogging mislyktes. Vennligst prøv igjen.",
          "ssoNoAccount": "Det finnes ingen konto her ennå for denne SSO-innloggingen. Vennligst kontakt administratoren for husholdningen din.",
 diff --git a/public/locales/nl.json b/public/locales/nl.json
-index f34d26bac..96760a479 100644
+index ea1e41f7f..5ec1be89d 100644
 --- a/public/locales/nl.json
 +++ b/public/locales/nl.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Alleen SSO-aanmelding",
          "memberSsoOnlyHint": "Het account krijgt geen wachtwoord. Het lid kan zich alleen via SSO aanmelden.",
          "memberSsoOnlyEditHint": "Staat de schakelaar aan, dan verliest het account zijn wachtwoord en komt het alleen nog via SSO binnen. Uitschakelen vereist een nieuw wachtwoord.",
@@ -352,7 +347,7 @@ index f34d26bac..96760a479 100644
          "healthPreventionNotifyCaregiversLabel": "Verzorgers op de hoogte stellen",
          "healthPreventionNotifyCaregiversHint": "Een verzorger ziet al wat er verschuldigd is zodra de app wordt geopend. Deze instelling stuurt daarnaast een pushmelding met jouw naam - standaard uit, want zorgtoegang alleen betekent nog geen melding.",
          "healthPreventionNotifyCaregiversSaved": "Meldingsinstelling opgeslagen.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Wachtwoord verbergen",
          "version": "v{{version}}",
          "loginWithSso": "Aanmelden met SSO",
@@ -361,10 +356,10 @@ index f34d26bac..96760a479 100644
          "ssoError": "SSO-aanmelding mislukt. Probeer het opnieuw.",
          "ssoNoAccount": "Er is hier nog geen account voor deze SSO-aanmelding. Neem contact op met de beheerder van je huishouden.",
 diff --git a/public/locales/pl.json b/public/locales/pl.json
-index 7fa1f702c..425aa4e25 100644
+index a7ec8b520..1c407773a 100644
 --- a/public/locales/pl.json
 +++ b/public/locales/pl.json
-@@ -3511,6 +3511,8 @@
+@@ -3513,6 +3513,8 @@
          "memberSsoOnlyLabel": "Tylko logowanie przez SSO",
          "memberSsoOnlyHint": "Konto nie otrzyma hasła. Członek może zalogować się wyłącznie przez SSO.",
          "memberSsoOnlyEditHint": "Przy włączonym przełączniku konto traci hasło i wchodzi już tylko przez SSO. Aby go wyłączyć, trzeba ustawić nowe hasło.",
@@ -373,7 +368,7 @@ index 7fa1f702c..425aa4e25 100644
          "healthPreventionNotifyCaregiversLabel": "Powiadamiaj opiekunów",
          "healthPreventionNotifyCaregiversHint": "Opiekun widzi już, co jest wymagane, otwierając aplikację. To ustawienie dodatkowo wysyła mu powiadomienie push z Twoim imieniem - domyślnie wyłączone, ponieważ samo uprawnienie opieki nie oznacza powiadomienia.",
          "healthPreventionNotifyCaregiversSaved": "Zapisano ustawienie powiadomień.",
-@@ -3707,6 +3709,7 @@
+@@ -3720,6 +3722,7 @@
          "hidePassword": "Ukryj hasło",
          "version": "v{{version}}",
          "loginWithSso": "Zaloguj się przez SSO",
@@ -382,10 +377,10 @@ index 7fa1f702c..425aa4e25 100644
          "ssoError": "Logowanie SSO nie powiodło się. Spróbuj ponownie.",
          "ssoNoAccount": "Dla tego logowania SSO nie ma tu jeszcze konta. Skontaktuj się z administratorem swojego gospodarstwa domowego.",
 diff --git a/public/locales/pt-BR.json b/public/locales/pt-BR.json
-index 12140a455..0dd987ad7 100644
+index 7c64bbcfb..fb6a78ac9 100644
 --- a/public/locales/pt-BR.json
 +++ b/public/locales/pt-BR.json
-@@ -3278,6 +3278,8 @@
+@@ -3280,6 +3280,8 @@
          "memberSsoOnlyLabel": "Somente login com SSO",
          "memberSsoOnlyHint": "A conta não recebe senha. O membro só pode fazer login com SSO.",
          "memberSsoOnlyEditHint": "Com o interruptor ligado, a conta perde a sua senha e só entra através de SSO. Para desligá-lo é preciso definir uma nova senha.",
@@ -394,7 +389,7 @@ index 12140a455..0dd987ad7 100644
          "healthPreventionNotifyCaregiversLabel": "Avisar meus cuidadores",
          "healthPreventionNotifyCaregiversHint": "Quem cuida de você já vê o que está pendente ao abrir o app. Esta opção também envia uma notificação push com seu nome - desativada por padrão, já que a permissão de cuidado sozinha não implica notificação.",
          "healthPreventionNotifyCaregiversSaved": "Configuração de notificação salva.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Ocultar senha",
          "version": "v{{version}}",
          "loginWithSso": "Entrar com SSO",
@@ -403,10 +398,10 @@ index 12140a455..0dd987ad7 100644
          "ssoError": "O login SSO falhou. Por favor, tente novamente.",
          "ssoNoAccount": "Ainda não existe uma conta aqui para este login SSO. Contate o administrador do seu grupo familiar.",
 diff --git a/public/locales/pt.json b/public/locales/pt.json
-index bb5d52300..32b0496aa 100644
+index a52331a06..44825e631 100644
 --- a/public/locales/pt.json
 +++ b/public/locales/pt.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Apenas início de sessão com SSO",
          "memberSsoOnlyHint": "A conta não recebe senha. O membro só pode iniciar sessão através de SSO.",
          "memberSsoOnlyEditHint": "Com o interruptor ligado, a conta perde a sua senha e só entra através de SSO. Para o desligar é preciso definir uma nova senha.",
@@ -415,7 +410,7 @@ index bb5d52300..32b0496aa 100644
          "healthPreventionNotifyCaregiversLabel": "Avisar meus cuidadores",
          "healthPreventionNotifyCaregiversHint": "Quem cuida de você já vê o que está pendente ao abrir o app. Esta opção também envia uma notificação push com seu nome - desativada por padrão, já que a permissão de cuidado sozinha não implica notificação.",
          "healthPreventionNotifyCaregiversSaved": "Configuração de notificação salva.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Ocultar senha",
          "version": "v{{version}}",
          "loginWithSso": "Entrar com SSO",
@@ -424,10 +419,10 @@ index bb5d52300..32b0496aa 100644
          "ssoError": "O login SSO falhou. Por favor, tente novamente.",
          "ssoNoAccount": "Ainda não existe uma conta aqui para este login SSO. Contacte o administrador do seu agregado familiar.",
 diff --git a/public/locales/ru.json b/public/locales/ru.json
-index 75c5fc9ab..e838f50ec 100644
+index 680cdb4f0..c8ee629b1 100644
 --- a/public/locales/ru.json
 +++ b/public/locales/ru.json
-@@ -3493,6 +3493,8 @@
+@@ -3495,6 +3495,8 @@
          "memberSsoOnlyLabel": "Только вход через SSO",
          "memberSsoOnlyHint": "Учётная запись не получает пароль. Участник может войти только через SSO.",
          "memberSsoOnlyEditHint": "При включённом переключателе учётная запись теряет свой пароль и входит только через SSO. Чтобы выключить его, нужно задать новый пароль.",
@@ -436,7 +431,7 @@ index 75c5fc9ab..e838f50ec 100644
          "healthPreventionNotifyCaregiversLabel": "Уведомлять опекунов",
          "healthPreventionNotifyCaregiversHint": "Опекун уже видит, что подошёл срок, открыв приложение. Эта настройка дополнительно отправляет ему push-уведомление с вашим именем - по умолчанию выключено, так как право опеки само по себе не означает уведомление.",
          "healthPreventionNotifyCaregiversSaved": "Настройка уведомлений сохранена.",
-@@ -3689,6 +3691,7 @@
+@@ -3702,6 +3704,7 @@
          "hidePassword": "Скрыть пароль",
          "version": "v{{version}}",
          "loginWithSso": "Войти через SSO",
@@ -445,10 +440,10 @@ index 75c5fc9ab..e838f50ec 100644
          "ssoError": "Вход через SSO не удался. Повторите попытку.",
          "ssoNoAccount": "Для этого входа через SSO здесь ещё нет учётной записи. Обратитесь к администратору вашего домохозяйства.",
 diff --git a/public/locales/sv.json b/public/locales/sv.json
-index 15d1c9171..728d2a72e 100644
+index 8949a9615..c3b76e79c 100644
 --- a/public/locales/sv.json
 +++ b/public/locales/sv.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Endast SSO-inloggning",
          "memberSsoOnlyHint": "Kontot får inget lösenord. Medlemmen kan bara logga in via SSO.",
          "memberSsoOnlyEditHint": "Med reglaget på förlorar kontot sitt lösenord och kommer bara in via SSO. För att stänga av det måste ett nytt lösenord anges.",
@@ -457,7 +452,7 @@ index 15d1c9171..728d2a72e 100644
          "healthPreventionNotifyCaregiversLabel": "Meddela mina vårdgivare",
          "healthPreventionNotifyCaregiversHint": "Den som hjälper dig ser redan vad som är dags för när appen öppnas. Den här inställningen skickar dessutom en push-notis med ditt namn - avstängd som standard, eftersom omsorgsbehörighet i sig inte innebär en avisering.",
          "healthPreventionNotifyCaregiversSaved": "Aviseringsinställning sparad.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Dölj lösenord",
          "version": "v{{version}}",
          "loginWithSso": "Logga in med SSO",
@@ -466,10 +461,10 @@ index 15d1c9171..728d2a72e 100644
          "ssoError": "SSO-inloggning misslyckades. Försök igen.",
          "ssoNoAccount": "Det finns ännu inget konto här för den här SSO-inloggningen. Kontakta administratören för ditt hushåll.",
 diff --git a/public/locales/tr.json b/public/locales/tr.json
-index 1d7ffa6c9..5c2f4bcab 100644
+index 121033365..be067634d 100644
 --- a/public/locales/tr.json
 +++ b/public/locales/tr.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Yalnızca SSO ile giriş",
          "memberSsoOnlyHint": "Hesap şifre almaz. Üye yalnızca SSO ile giriş yapabilir.",
          "memberSsoOnlyEditHint": "Anahtar açıkken hesap şifresini kaybeder ve yalnızca SSO ile girer. Kapatmak için yeni bir şifre belirlenmelidir.",
@@ -478,7 +473,7 @@ index 1d7ffa6c9..5c2f4bcab 100644
          "healthPreventionNotifyCaregiversLabel": "Bakım verenleri bilgilendir",
          "healthPreventionNotifyCaregiversHint": "Bakım veren kişi uygulamayı açtığında zaten neyin süresi geldiğini görür. Bu ayar ayrıca adınızı belirten bir push bildirimi de gönderir - bakım izni tek başına bildirim anlamına gelmediği için varsayılan olarak kapalıdır.",
          "healthPreventionNotifyCaregiversSaved": "Bildirim ayarı kaydedildi.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Şifreyi gizle",
          "version": "v{{version}}",
          "loginWithSso": "SSO ile giriş yap",
@@ -487,10 +482,10 @@ index 1d7ffa6c9..5c2f4bcab 100644
          "ssoError": "SSO girişi başarısız oldu. Lütfen tekrar deneyin.",
          "ssoNoAccount": "Bu SSO girişi için burada henüz bir hesap yok. Lütfen hane yöneticinizle iletişime geçin.",
 diff --git a/public/locales/uk.json b/public/locales/uk.json
-index d0450f09a..4cd2394c3 100644
+index 3efe013d8..c6d951258 100644
 --- a/public/locales/uk.json
 +++ b/public/locales/uk.json
-@@ -3493,6 +3493,8 @@
+@@ -3495,6 +3495,8 @@
          "memberSsoOnlyLabel": "Лише вхід через SSO",
          "memberSsoOnlyHint": "Обліковий запис не отримує пароля. Учасник може увійти лише через SSO.",
          "memberSsoOnlyEditHint": "З увімкненим перемикачем обліковий запис втрачає свій пароль і заходить лише через SSO. Щоб вимкнути його, потрібно задати новий пароль.",
@@ -499,7 +494,7 @@ index d0450f09a..4cd2394c3 100644
          "healthPreventionNotifyCaregiversLabel": "Сповіщати опікунів",
          "healthPreventionNotifyCaregiversHint": "Опікун вже бачить, що настав термін, відкривши застосунок. Це налаштування додатково надсилає йому push-сповіщення з вашим ім'ям - за замовчуванням вимкнено, оскільки саме право опіки не означає сповіщення.",
          "healthPreventionNotifyCaregiversSaved": "Налаштування сповіщень збережено.",
-@@ -3689,6 +3691,7 @@
+@@ -3702,6 +3704,7 @@
          "hidePassword": "Приховати пароль",
          "version": "v{{version}}",
          "loginWithSso": "Увійти через SSO",
@@ -508,10 +503,10 @@ index d0450f09a..4cd2394c3 100644
          "ssoError": "Вхід через SSO не вдався. Спробуйте ще раз.",
          "ssoNoAccount": "Для цього входу через SSO тут ще немає облікового запису. Зверніться до адміністратора вашого домогосподарства.",
 diff --git a/public/locales/vi.json b/public/locales/vi.json
-index 18c971d41..d2050acea 100644
+index 9dc607a10..d825d7190 100644
 --- a/public/locales/vi.json
 +++ b/public/locales/vi.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "Chỉ đăng nhập bằng SSO",
          "memberSsoOnlyHint": "Tài khoản không nhận mật khẩu. Thành viên chỉ có thể đăng nhập qua SSO.",
          "memberSsoOnlyEditHint": "Khi bật, tài khoản mất mật khẩu và chỉ vào được qua SSO. Để tắt, cần đặt một mật khẩu mới.",
@@ -520,7 +515,7 @@ index 18c971d41..d2050acea 100644
          "healthPreventionNotifyCaregiversLabel": "Thông báo cho người chăm sóc",
          "healthPreventionNotifyCaregiversHint": "Người chăm sóc đã có thể thấy mục nào đến hạn khi mở ứng dụng. Bật tùy chọn này sẽ gửi thêm thông báo đẩy có tên của bạn - mặc định tắt, vì quyền chăm sóc không tự động nghĩa là có thông báo.",
          "healthPreventionNotifyCaregiversSaved": "Đã lưu cài đặt thông báo.",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "Ẩn mật khẩu",
          "version": "v{{version}}",
          "loginWithSso": "Đăng nhập với SSO",
@@ -529,10 +524,10 @@ index 18c971d41..d2050acea 100644
          "ssoError": "Đăng nhập SSO thất bại. Vui lòng thử lại.",
          "ssoNoAccount": "Chưa có tài khoản nào ở đây cho lần đăng nhập SSO này. Vui lòng liên hệ quản trị viên hộ gia đình của bạn.",
 diff --git a/public/locales/zh-Hant.json b/public/locales/zh-Hant.json
-index 782353072..86eb21829 100644
+index 54a20d451..92e24ce12 100644
 --- a/public/locales/zh-Hant.json
 +++ b/public/locales/zh-Hant.json
-@@ -3283,6 +3283,8 @@
+@@ -3285,6 +3285,8 @@
          "memberSsoOnlyLabel": "僅透過 SSO 登入",
          "memberSsoOnlyHint": "該帳戶不會設定密碼，成員只能透過 SSO 登入。",
          "memberSsoOnlyEditHint": "開關開啟時，帳戶將失去密碼，只能透過 SSO 進入。關閉時必須設定新密碼。",
@@ -541,7 +536,7 @@ index 782353072..86eb21829 100644
          "healthPreventionNotifyCaregiversLabel": "通知我的照護者",
          "healthPreventionNotifyCaregiversHint": "照護者開啟應用程式後已經可以看到到期項目。開啟此設定還會向其發送包含您姓名的推播通知 - 預設關閉，因為僅有照護權限並不代表會收到通知。",
          "healthPreventionNotifyCaregiversSaved": "通知設定已儲存。",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "隱藏密碼",
          "version": "v{{version}}",
          "loginWithSso": "透過SSO登入",
@@ -550,10 +545,10 @@ index 782353072..86eb21829 100644
          "ssoError": "SSO登入失敗，請重試。",
          "ssoNoAccount": "此SSO登入尚無對應帳戶，請聯絡您家庭的管理員。",
 diff --git a/public/locales/zh.json b/public/locales/zh.json
-index b4495618a..00e2a2af2 100644
+index 6f7d2a8f7..a35a21236 100644
 --- a/public/locales/zh.json
 +++ b/public/locales/zh.json
-@@ -3279,6 +3279,8 @@
+@@ -3281,6 +3281,8 @@
          "memberSsoOnlyLabel": "仅通过 SSO 登录",
          "memberSsoOnlyHint": "该账户不会设置密码，成员只能通过 SSO 登录。",
          "memberSsoOnlyEditHint": "开关打开时，账户将失去密码，只能通过 SSO 进入。关闭时必须设置新密码。",
@@ -562,7 +557,7 @@ index b4495618a..00e2a2af2 100644
          "healthPreventionNotifyCaregiversLabel": "通知我的照护者",
          "healthPreventionNotifyCaregiversHint": "照护者打开应用后已经可以看到到期项目。开启此设置还会向其发送包含您姓名的推送通知 - 默认关闭,因为仅有照护权限并不意味着会收到通知。",
          "healthPreventionNotifyCaregiversSaved": "通知设置已保存。",
-@@ -3463,6 +3465,7 @@
+@@ -3476,6 +3478,7 @@
          "hidePassword": "隐藏密码",
          "version": "v{{version}}",
          "loginWithSso": "通过SSO登录",
@@ -571,7 +566,7 @@ index b4495618a..00e2a2af2 100644
          "ssoError": "SSO登录失败，请重试。",
          "ssoNoAccount": "此SSO登录尚无对应账户，请联系您家庭的管理员。",
 diff --git a/public/pages/login.js b/public/pages/login.js
-index 490f18e8c..4d6caff7f 100644
+index 490f18e8c..7cf16709d 100644
 --- a/public/pages/login.js
 +++ b/public/pages/login.js
 @@ -37,6 +37,8 @@ export async function render(container) {
@@ -602,10 +597,10 @@ index 490f18e8c..4d6caff7f 100644
            <p class="auth-form__forgot" hidden>
              <a href="/forgot-password" data-link>${esc(t('login.forgotPassword'))}</a>
 diff --git a/public/settings/pages/admin-family.js b/public/settings/pages/admin-family.js
-index 11cb88b9c..7ac9ed73d 100644
+index 393d3fd10..91f86a7e8 100644
 --- a/public/settings/pages/admin-family.js
 +++ b/public/settings/pages/admin-family.js
-@@ -41,6 +41,26 @@ const randomAvatarColor = () => USER_COLORS[Math.floor(Math.random() * USER_COLO
+@@ -42,6 +42,26 @@ const randomAvatarColor = () => USER_COLORS[Math.floor(Math.random() * USER_COLO
   * und keine Angabe zu einem einzelnen Mitglied.
   */
  let ssoAvailable = false;
@@ -632,7 +627,7 @@ index 11cb88b9c..7ac9ed73d 100644
  
  /**
   * Rechte-Katalog fuer die Startrechte einer Einladung (#869).
-@@ -299,6 +319,7 @@ function addMemberFormHtml() {
+@@ -300,6 +320,7 @@ function addMemberFormHtml() {
              ssoAvailable ? switchRowHtml({
                id: 'new-member-sso-only', label: t('settings.memberSsoOnlyLabel'), hint: t('settings.memberSsoOnlyHint'),
              }) : '',
@@ -640,7 +635,7 @@ index 11cb88b9c..7ac9ed73d 100644
              formRowHtml({
                label: t('settings.memberPasswordLabel'), labelFor: 'new-member-password', labelExtra: REQUIRED_MARK, field: true,
                attrs: { id: 'new-member-password-group' },
-@@ -1095,6 +1116,7 @@ async function openEditMemberModal(member, currentUser, users, container) {
+@@ -1096,6 +1117,7 @@ async function openEditMemberModal(member, currentUser, users, container) {
              id: 'edit-member-sso-only', label: t('settings.memberSsoOnlyLabel'),
              hint: t('settings.memberSsoOnlyEditHint'), checked: member.sso_only === true,
            }) : '',
@@ -648,7 +643,7 @@ index 11cb88b9c..7ac9ed73d 100644
            formRowHtml({
              label: t('settings.resetPasswordLabel'), labelFor: 'edit-member-password', field: true,
              attrs: { id: 'edit-member-password-group' },
-@@ -1209,6 +1231,11 @@ async function openEditMemberModal(member, currentUser, users, container) {
+@@ -1210,6 +1232,11 @@ async function openEditMemberModal(member, currentUser, users, container) {
              birth_year_unknown: birth.yearUnknown,
              ...(newPassword ? { password: newPassword } : {}),
              ...(ssoToggle ? { sso_only: ssoToggle.checked } : {}),
@@ -660,7 +655,7 @@ index 11cb88b9c..7ac9ed73d 100644
            });
            // Betreuung getrennt speichern: sie lebt im Gesundheitsmodul, nicht am
            // Nutzerdatensatz (#584).
-@@ -1256,8 +1283,16 @@ function syncSsoOnlyField(container) {
+@@ -1257,8 +1284,16 @@ function syncSsoOnlyField(container) {
    // Ohne Passwort ist die E-Mail der einzige Weg, auf dem die erste
    // SSO-Anmeldung dieses Konto findet - ein gleicher Benutzername verknuepft
    // bewusst nicht. Der Server weist es sonst ab; das hier sagt es vorher.
@@ -678,7 +673,7 @@ index 11cb88b9c..7ac9ed73d 100644
  }
  
  function openAddMemberModal(container, currentUser, users) {
-@@ -1270,6 +1305,8 @@ function openAddMemberModal(container, currentUser, users) {
+@@ -1271,6 +1306,8 @@ function openAddMemberModal(container, currentUser, users) {
        const form = panel.querySelector('#add-member-form');
        form.querySelector('#new-member-sso-only')
          ?.addEventListener('change', () => syncSsoOnlyField(panel));
@@ -687,7 +682,7 @@ index 11cb88b9c..7ac9ed73d 100644
        syncSsoOnlyField(panel);
        bindChildStartHint(panel, 'new-family-role', 'new-member-child-hint');
        panel.querySelector('#cancel-add-member')?.addEventListener('click', () => closeModal());
-@@ -1300,6 +1337,8 @@ function openAddMemberModal(container, currentUser, users) {
+@@ -1301,6 +1338,8 @@ function openAddMemberModal(container, currentUser, users) {
            email: panel.querySelector('#new-member-email')?.value.trim() || null,
            birth_date: parseDateInput(birthDateRaw) || null,
          };
@@ -696,7 +691,7 @@ index 11cb88b9c..7ac9ed73d 100644
  
          const btn = panel.querySelector('[type=submit]');
          const modalContext = captureModalContext();
-@@ -1419,9 +1458,12 @@ export async function render(container, { user } = {}) {
+@@ -1420,9 +1459,12 @@ export async function render(container, { user } = {}) {
    // Ein Ausfall dieser Abfrage darf die Verwaltung nicht kosten: ohne Antwort
    // bleibt es beim bisherigen Formular mit Pflicht-Passwort.
    try {
@@ -711,10 +706,10 @@ index 11cb88b9c..7ac9ed73d 100644
    // Derselbe Grundsatz wie darueber: faellt der Katalog aus, bleibt der Hinweis
    // unter den Startrechten ohne Modulnamen, aber das Formular funktioniert.
 diff --git a/server/auth.js b/server/auth.js
-index e275b93c6..c2005c1e9 100644
+index 0a9d5f3bb..644c8d514 100644
 --- a/server/auth.js
 +++ b/server/auth.js
-@@ -42,7 +42,13 @@ import {
+@@ -46,7 +46,13 @@ import {
    getConfig as getOidcConfig,
    exchangeAuthorizationCode,
    describeOidcError,
@@ -728,7 +723,7 @@ index e275b93c6..c2005c1e9 100644
  import { emailService as defaultEmailService } from './services/email.js';
  import { passwordResetService as defaultResetService } from './services/password-reset.js';
  import { inviteService as defaultInviteService } from './services/invites.js';
-@@ -659,6 +665,9 @@ function publicUser(row) {
+@@ -716,6 +722,9 @@ function publicUser(row) {
      // 2FA-Uebersicht, die aus demselben Grund nicht an /auth/users haengt.
      // Ueber sich selbst erfaehrt es jedes Konto aus GET /me (#1703).
      ...(row.sso_only !== undefined && { sso_only: Boolean(row.sso_only) }),
@@ -738,7 +733,7 @@ index e275b93c6..c2005c1e9 100644
    };
  }
  
-@@ -1385,6 +1394,7 @@ function ssoLinkCandidates(database, address, { excludeUserId = null } = {}) {
+@@ -1464,6 +1473,7 @@ function ssoLinkCandidates(database, address, { excludeUserId = null } = {}) {
   * @param {import('better-sqlite3-multiple-ciphers').Database} database
   * @param {{ sub: string, iss?: string, email?: string, email_verified?: boolean, name?: string, preferred_username?: string, username?: string }} claims
   * @returns {{ id: number, role: string, [key: string]: any }|{ refused: string, accountIds: number[] }|null}
@@ -746,7 +741,7 @@ index e275b93c6..c2005c1e9 100644
   *   `null`, wenn das Konto neu wäre und die automatische Kontoerstellung
   *   abgeschaltet ist; `{ refused }` mit dem Redirect-Grund, wenn die Adresse
   *   kein Konto eindeutig und sicher benennt.
-@@ -1462,6 +1472,14 @@ export function findOrCreateOidcUser(database, claims) {
+@@ -1541,6 +1551,14 @@ export function findOrCreateOidcUser(database, claims) {
    //    jemand getroffen hat, und die soll der Schalter nicht zuruecknehmen.
    if (!isOidcSignupAllowed()) return null;
  
@@ -761,7 +756,7 @@ index e275b93c6..c2005c1e9 100644
    // 4. Eindeutigen username ableiten (Kollision mit bestehenden Usernamen vermeiden).
    //    Reihenfolge: preferred_username (Standard-Claim) → username (non-standard,
    //    u. a. Synology DSM SSO) → sub. Die E-Mail ist bewusst KEIN Kandidat (#653):
-@@ -2373,6 +2391,9 @@ router.get('/oidc/config', (_req, res) => {
+@@ -2455,6 +2473,9 @@ router.get('/oidc/config', (_req, res) => {
    const passwordLoginEnabled = isPasswordLoginEnabled();
    res.json({
      enabled: isOidcEnabled(),
@@ -771,7 +766,7 @@ index e275b93c6..c2005c1e9 100644
      password_login_enabled: passwordLoginEnabled,
      guest_password_login_enabled: !passwordLoginEnabled && hasSplitExpenseGuests(),
    });
-@@ -2392,6 +2413,8 @@ router.get('/oidc/config', (_req, res) => {
+@@ -2474,6 +2495,8 @@ router.get('/oidc/config', (_req, res) => {
   * @param {object} extra  zusätzliche Session-Felder, z. B. { linkUserId }
   */
  async function beginOidcFlow(req, config, extra = {}) {
@@ -780,7 +775,7 @@ index e275b93c6..c2005c1e9 100644
    const state         = oidcClient.randomState();
    const nonce         = oidcClient.randomNonce();
    const codeVerifier  = oidcClient.randomPKCECodeVerifier();
-@@ -2418,6 +2441,26 @@ async function beginOidcFlow(req, config, extra = {}) {
+@@ -2500,6 +2523,26 @@ async function beginOidcFlow(req, config, extra = {}) {
    }).href;
  }
  
@@ -807,7 +802,7 @@ index e275b93c6..c2005c1e9 100644
  router.get('/oidc/start', refuseWhileRestoring, async (req, res) => {
    try {
      const config = await getOidcConfig();
-@@ -2532,24 +2575,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
+@@ -2614,24 +2657,50 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
        return res.redirect('/login?error=oidc_state_mismatch');
      }
  
@@ -874,7 +869,7 @@ index e275b93c6..c2005c1e9 100644
  
      // Verknüpfungs-Lauf (#832): der Nutzer ist bereits angemeldet und bindet
      // sein OIDC-Konto an genau dieses Konto. Kein Anlegen, kein Zuordnen über
-@@ -2600,6 +2669,10 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
+@@ -2682,6 +2751,10 @@ router.get('/oidc/callback', refuseWhileRestoring, async (req, res) => {
      // Kein Konto angelegt, keins verknuepft; der Grund steht im Redirect, und
      // das Log sagt dem Admin, welche Konten er ansehen muss. Die Adresse selbst
      // steht nicht im Log, die Konto-IDs genuegen.
@@ -885,7 +880,7 @@ index e275b93c6..c2005c1e9 100644
      if (user.refused) {
        const ids = user.accountIds.join(', ');
        if (user.refused === 'oidc_email_ambiguous') {
-@@ -3208,11 +3281,12 @@ router.get('/users', requireAuth, (req, res) => {
+@@ -3570,11 +3643,12 @@ router.get('/users', requireAuth, (req, res) => {
        ? db.get().prepare(`
            SELECT ${USER_PUBLIC_COLUMNS},
                   EXISTS(SELECT 1 FROM housekeeping_workers hw WHERE hw.user_id = users.id) AS is_worker,
@@ -900,7 +895,7 @@ index e275b93c6..c2005c1e9 100644
        : db.get().prepare(`
            SELECT ${USER_PUBLIC_COLUMNS},
                   EXISTS(SELECT 1 FROM housekeeping_workers hw WHERE hw.user_id = users.id) AS is_worker
-@@ -3433,8 +3507,54 @@ router.post('/api-tokens/:id/remove', requireAuth, requireAdmin, csrfMiddleware,
+@@ -3796,8 +3870,54 @@ router.post('/api-tokens/:id/remove', requireAuth, requireAdmin, csrfMiddleware,
   */
  function adminUserRow(userId) {
    return db.get()
@@ -957,7 +952,7 @@ index e275b93c6..c2005c1e9 100644
  }
  
  /**
-@@ -3549,7 +3669,18 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
+@@ -3912,7 +4032,18 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
  
      // Erst hier, weil die Pruefung die E-Mail braucht: ein neues Konto ist noch
      // mit nichts verknuepft, also ist die Adresse sein einziger Weg hinein.
@@ -977,7 +972,7 @@ index e275b93c6..c2005c1e9 100644
      if (ssoOnlyError) return res.status(400).json({ error: ssoOnlyError, code: 400 });
  
      const hash = ssoOnly ? OIDC_PASSWORD_SENTINEL : await hashPassword(password);
-@@ -3561,6 +3692,10 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
+@@ -3924,6 +4055,10 @@ router.post('/users', requireAuth, requireAdmin, csrfMiddleware, async (req, res
            VALUES (?, ?, ?, ?, ?, ?, ?)
          `)
          .run(username, display_name, hash, avatar_color, normalizedAvatarData ?? null, role, family_role);
@@ -988,7 +983,7 @@ index e275b93c6..c2005c1e9 100644
        // Kinder-Startrechte (R20): in derselben Transaktion wie das Konto, damit
        // es nie einen Moment mit Budget und Haushaltshilfe-Loehnen gibt.
        applyChildStartPermissions(db.get(), {
-@@ -3669,11 +3804,28 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+@@ -4032,11 +4167,28 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
      // Ein bereits verknuepftes Konto braucht keine E-Mail mehr - sein `sub`
      // findet es. Sonst zaehlt die Adresse, die nach diesem Aufruf gilt.
      const linkedRow = db.get().prepare('SELECT oidc_sub FROM users WHERE id = ?').get(userId);
@@ -1018,7 +1013,7 @@ index e275b93c6..c2005c1e9 100644
        email: effectiveEmail,
        excludeUserId: userId,
      });
-@@ -3686,6 +3838,18 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+@@ -4049,6 +4201,18 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
      if (ssoOnly === false && isSsoOnlyAccount(existingHash) && !newPassword) {
        return res.status(400).json({ error: 'Turning off SSO-only requires setting a password.', code: 400 });
      }
@@ -1037,7 +1032,7 @@ index e275b93c6..c2005c1e9 100644
  
      // Ein Ehemaliger wird nicht Administrator (#1381): er kaeme nie an
      // `requireAdmin` vorbei, stuende aber als Administrator in der Verwaltung.
-@@ -3724,6 +3888,10 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
+@@ -4087,6 +4251,10 @@ router.patch('/users/:id', requireAuth, requireAdmin, csrfMiddleware, async (req
        if (newPasswordHash) {
          db.get().prepare('UPDATE users SET password_hash = ? WHERE id = ?').run(newPasswordHash, userId);
        }
@@ -1049,10 +1044,10 @@ index e275b93c6..c2005c1e9 100644
        syncFamilyMemberArtifacts(db.get(), userId, {
          displayName,
 diff --git a/server/openapi/paths/auth.js b/server/openapi/paths/auth.js
-index bee8e2111..8e7e036fc 100644
+index f31185229..8b54d4ed0 100644
 --- a/server/openapi/paths/auth.js
 +++ b/server/openapi/paths/auth.js
-@@ -184,6 +184,7 @@ export function authPaths() {
+@@ -209,6 +209,7 @@ export function authPaths() {
            + 'Two or more matching accounts redirect to /login?error=oidc_email_ambiguous; a single matching member account that has a password redirects to /login?error=oidc_link_required, and that member links SSO while signed in (POST /api/v1/auth/oidc/link/start). '
            + 'Neither case creates or links an account, whatever OIDC_ALLOW_SIGNUP says. '
            + 'With OIDC_ALLOW_SIGNUP=false an identity that matches no existing account is redirected to /login?error=oidc_signup_disabled instead of being provisioned. '
@@ -1060,7 +1055,7 @@ index bee8e2111..8e7e036fc 100644
            + 'A link run started while signed in (POST /api/v1/auth/oidc/link/start) redirects to /settings/personal/account?oidc_linked=1, or on refusal to /settings/personal/account?oidc_link_error=<reason>: `user_gone` (the account no longer exists or can no longer sign in), `already_linked` (the account is linked to another identity), `sub_taken` (the identity is linked to another account).',
          responses: {
            302: { description: 'Redirect to app or login error page' },
-@@ -682,6 +683,7 @@ export function authPaths() {
+@@ -830,6 +831,7 @@ export function authPaths() {
  // #2267: die Gruende, die die Anmelde- und Kontorouten neben `error` senden.
  const INVALID_CODE = '`invalid_code` (400, the code is wrong or expired)';
  const NOT_ENABLED = '`not_enabled` (409, two-factor authentication is not turned on)';
@@ -1068,7 +1063,7 @@ index bee8e2111..8e7e036fc 100644
  const DEACTIVATED_SUBJECT = '`account_deactivated` (400, the chosen account is deactivated)';
  const CASE_REASONS = {
    '/api/v1/auth/login': {
-@@ -692,6 +694,12 @@ const CASE_REASONS = {
+@@ -840,7 +842,13 @@ const CASE_REASONS = {
    '/api/v1/auth/2fa/recovery-codes': { post: `${INVALID_CODE}, ${NOT_ENABLED}` },
    '/api/v1/auth/logout-others': { post: '`browser_session_required` (403, only a signed-in browser session can sign out the other sessions, not an API token)' },
    '/api/v1/auth/setup': { post: '`setup_completed` (403, setup has already been completed)' },
@@ -1081,14 +1076,15 @@ index bee8e2111..8e7e036fc 100644
 +      + 'would switch password login back on)',
 +  },
    '/api/v1/auth/api-tokens': { post: DEACTIVATED_SUBJECT },
- };
+   '/api/v1/auth/devices': {
+     get: '`session_required` (403, an API token cannot read a person\'s devices)',
 diff --git a/server/openapi/schemas.js b/server/openapi/schemas.js
-index 702de7739..41e546130 100644
+index d38c96df5..bc31cdaf0 100644
 --- a/server/openapi/schemas.js
 +++ b/server/openapi/schemas.js
-@@ -868,6 +868,11 @@ export const schemas = {
-               description: 'Only present on GET /auth/users for administrators: the account carries no '
-                 + 'password and can only be entered through SSO.',
+@@ -1675,6 +1675,11 @@ export const schemas = {
+               description: 'Only present on GET /auth/users for administrators, and on GET /auth/me about '
+                 + 'the own account: the account carries no password and can only be entered through SSO.',
              },
 +            homeassistant_user_id: {
 +              type: ['string', 'null'],
@@ -1098,7 +1094,7 @@ index 702de7739..41e546130 100644
              sort_order: {
                type: ['integer', 'null'],
                description: 'Position in the household member order, or null: for a member that has not been '
-@@ -1006,6 +1011,12 @@ export const schemas = {
+@@ -1819,6 +1824,12 @@ export const schemas = {
                  + 'Requires OIDC to be configured, and rejects a password sent alongside it. '
                  + 'Deliberately explicit rather than inferred from a missing password.',
              },
@@ -1111,7 +1107,7 @@ index 702de7739..41e546130 100644
              avatar_color: { type: 'string' },
              avatar_data: { type: ['string', 'null'], description: 'PNG, JPEG, or WebP data URL.' },
              family_role: { type: 'string', enum: ['dad', 'mom', 'parent', 'child', 'grandparent', 'relative', 'other'] },
-@@ -1029,6 +1040,12 @@ export const schemas = {
+@@ -1842,6 +1853,12 @@ export const schemas = {
                  + 'true clears the password; false requires a password to be sent with it, otherwise the '
                  + 'account would be left with no way in at all. Omit to leave unchanged.',
              },

@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.84.0-1
+
+- Yuvomi 2.84.0 ([release notes](https://github.com/ulsklyc/yuvomi/releases/tag/v2.84.0)).
+- Sign-in with Home Assistant carried over to 2.84.0 unchanged.
+
 ## 2.83.0-9
 
 - Signing in with Home Assistant from the sidebar no longer opens a separate window. This part

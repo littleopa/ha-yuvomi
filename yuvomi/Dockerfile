@@ -1,4 +1,4 @@
-ARG BUILD_FROM=ghcr.io/ulsklyc/yuvomi:2.83.0
+ARG BUILD_FROM=ghcr.io/ulsklyc/yuvomi:2.84.0
 FROM ${BUILD_FROM}
 
 # Anmeldung mit Home Assistant, bis Yuvomi sie selbst mitbringt
