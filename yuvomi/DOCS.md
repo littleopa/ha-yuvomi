@@ -83,9 +83,10 @@ app ships this as a small patch until Yuvomi includes it upstream.
 Yuvomi only asks Home Assistant who signed in and revokes the token
 immediately; it gets no further access to Home Assistant.
 
-Inside the sidebar the Home Assistant login opens in a separate window
-(Home Assistant does not allow its login page inside foreign frames); the
-sidebar reloads by itself once the sign-in succeeded.
+Inside the sidebar the Home Assistant login does not work, because Home
+Assistant does not allow its login page inside foreign frames. Sign in once
+by opening Yuvomi directly in the browser; the sidebar then uses the same
+session.
 
 ## Showing Yuvomi in the sidebar
 

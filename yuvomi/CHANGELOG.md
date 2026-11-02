@@ -1,5 +1,11 @@
 # Changelog
 
+## 2.83.0-9
+
+- Signing in with Home Assistant from the sidebar no longer opens a separate window. This part
+  was removed from the upstream pull request, so the app follows it. Sign in once by opening
+  Yuvomi directly in the browser; the sidebar then uses the same session.
+
 ## 2.83.0-8
 
 - On a new installation, signing in with Home Assistant before setup no longer creates an

@@ -88,9 +88,9 @@ Updates keep the `/data` folder. Yuvomi migrates its database forward on start, 
 </details>
 
 <details>
-<summary><b>The login inside the sidebar opens a new window. Is that intended?</b></summary>
+<summary><b>Why does "Sign in with Home Assistant" do nothing inside the sidebar?</b></summary>
 
-Yes. Home Assistant, like most identity providers, refuses to show its login page inside another site's frame. The sign-in runs in a separate window, and the panel reloads by itself once you are signed in.
+Home Assistant, like most identity providers, refuses to show its login page inside another site's frame. Sign in once by opening Yuvomi directly in the browser; the sidebar then uses the same session.
 </details>
 
 ## Support
