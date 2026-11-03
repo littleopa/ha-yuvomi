@@ -1,5 +1,12 @@
 # Changelog
 
+## 2.84.0-2
+
+- Sign-in with Home Assistant follows the second upstream review: changing or removing a member's
+  Home Assistant ID ends their sessions, a failed token revoke is logged, and bindings use the fixed
+  provider key `homeassistant` instead of the Home Assistant URL. Existing bindings are moved over
+  at startup.
+
 ## 2.84.0-1
 
 - Yuvomi 2.84.0 ([release notes](https://github.com/ulsklyc/yuvomi/releases/tag/v2.84.0)).

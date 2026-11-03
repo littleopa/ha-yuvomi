@@ -10,21 +10,29 @@ import { readFileSync, existsSync } from 'node:fs';
 
 const opts = JSON.parse(readFileSync('/data/options.json', 'utf8'));
 const entries = (opts.link_accounts || []).filter((e) => typeof e === 'string' && e.includes('='));
-const provider = (process.env.HOMEASSISTANT_URL || '').replace(/\/+$/, '');
+const haUrl = (process.env.HOMEASSISTANT_URL || '').replace(/\/+$/, '');
+// Fixed provider key since the second upstream review (#2428): bindings no
+// longer depend on the Home Assistant address.
+const provider = 'homeassistant';
 
-if (!entries.length) process.exit(0);
-if (!provider) {
-  console.error('[ha-yuvomi] link_accounts ignored: Home Assistant sign-in is not configured.');
+if (!haUrl) {
+  if (entries.length) console.error('[ha-yuvomi] link_accounts ignored: Home Assistant sign-in is not configured.');
   process.exit(0);
 }
 if (!existsSync(process.env.DB_PATH)) {
-  console.error('[ha-yuvomi] link_accounts ignored: no database yet (start Yuvomi once first).');
+  if (entries.length) console.error('[ha-yuvomi] link_accounts ignored: no database yet (start Yuvomi once first).');
   process.exit(0);
 }
 
 const db = await import('/app/server/db.js');
 db.init({ plaintextBackup: false });
 const database = db.get();
+
+// Bindings written before 2.84.0-2 carry the Home Assistant URL as provider.
+const moved = database.prepare(
+  "UPDATE users SET oidc_provider = ? WHERE oidc_sub IS NOT NULL AND rtrim(oidc_provider, '/') = ?",
+).run(provider, haUrl).changes;
+if (moved) console.log(`[ha-yuvomi] ${moved} Home Assistant binding(s) moved to the provider key "${provider}"`);
 
 for (const entry of entries) {
   const i = entry.indexOf('=');
