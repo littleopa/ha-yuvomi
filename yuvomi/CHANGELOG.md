@@ -1,5 +1,10 @@
 # Changelog
 
+## 2.84.0-3
+
+- Fix: the Yuvomi 2.84.0 image no longer ships `gosu` (upstream switched to `setpriv`), so the
+  sidebar page and `link_accounts` did not start in 2.84.0-1/-2. Both now use `setpriv` as well.
+
 ## 2.84.0-2
 
 - Sign-in with Home Assistant follows the second upstream review: changing or removing a member's
